@@ -60,12 +60,6 @@ else
     exit 1
 fi
 
-# Optional: copy kubeconfig to user home for kubectl access
-mkdir -p $HOME/.kube
-cp "$KUBECONFIG_FILE" $HOME/.kube/config
-chown $(id -u):$(id -g) $HOME/.kube/config
-echo "✅ Kubeconfig copied to $HOME/.kube/config for kubectl access"
-
 # --- Deploy kube-vip for Kubernetes API VIP ---
 if [ ! -f "$KUBE_VIP_API_YAML" ]; then
     echo "❌ kube-vip API YAML file '$KUBE_VIP_API_YAML' not found!"
