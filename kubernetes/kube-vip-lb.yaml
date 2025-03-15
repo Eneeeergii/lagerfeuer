@@ -37,7 +37,7 @@ spec:
         - name: svc_election
           value: "true"
         - name: svc_namespace
-          value: kube-system
+          value: ""
         - name: address_range
           value: "${VIP_LB_RANGE}"  # <-- This is the dynamic LoadBalancer IP range
         - name: prometheus_server
