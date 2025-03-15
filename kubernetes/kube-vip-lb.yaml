@@ -41,7 +41,7 @@ spec:
         - name: address_range
           value: "${VIP_LB_RANGE}"  # <-- This is the dynamic LoadBalancer IP range
         - name: prometheus_server
-          value: ":2112"
+          value: ":2113"
         image: ghcr.io/kube-vip/kube-vip:v0.8.9
         imagePullPolicy: IfNotPresent
         name: kube-vip-lb
