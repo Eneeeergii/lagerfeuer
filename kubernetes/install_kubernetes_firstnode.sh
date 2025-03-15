@@ -5,7 +5,8 @@ set -o pipefail  # Catch pipeline errors
 
 # Files
 CONFIG_FILE="./config.env"
-KUBE_VIP_YAML="./kubeVIP_kube-API.yaml"  # YAML template with placeholders
+KUBE_VIP_API_YAML="./kube-vip-api.yaml"
+KUBE_VIP_LB_YAML="./kube-vip-lb.yaml"
 
 # --- Load Configuration ---
 if [ ! -f "$CONFIG_FILE" ]; then
@@ -47,20 +48,55 @@ curl -sfL https://get.k3s.io | sh -
 
 echo "✅ K3s installed successfully!"
 
-# --- Deploy kube-vip ---
-if [ ! -f "$KUBE_VIP_YAML" ]; then
-    echo "❌ kube-vip YAML file '$KUBE_VIP_YAML' not found!"
+# --- Fix kubeconfig ---
+KUBECONFIG_FILE="/etc/rancher/k3s/k3s.yaml"
+
+if [ -f "$KUBECONFIG_FILE" ]; then
+    echo "🔧 Replacing 127.0.0.1 with ${K3S_API_IP} in $KUBECONFIG_FILE"
+    sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$KUBECONFIG_FILE"
+    echo "✅ K3s kubeconfig updated to use ${K3S_API_IP}"
+else
+    echo "❌ K3s kubeconfig not found at $KUBECONFIG_FILE!"
     exit 1
 fi
 
-# Export variables for envsubst
+# Optional: copy kubeconfig to user home for kubectl access
+mkdir -p $HOME/.kube
+cp "$KUBECONFIG_FILE" $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+echo "✅ Kubeconfig copied to $HOME/.kube/config for kubectl access"
+
+# --- Deploy kube-vip for Kubernetes API VIP ---
+if [ ! -f "$KUBE_VIP_API_YAML" ]; then
+    echo "❌ kube-vip API YAML file '$KUBE_VIP_API_YAML' not found!"
+    exit 1
+fi
+
 export K3S_API_IP
 export VIP_INTERFACE
 
-echo "🚀 Deploying kube-vip with API IP $K3S_API_IP on interface $VIP_INTERFACE"
+echo "🚀 Deploying kube-vip for Kubernetes API at $K3S_API_IP on interface $VIP_INTERFACE"
 
-# Substitute variables and apply
-envsubst < "$KUBE_VIP_YAML" | kubectl apply -f -
+envsubst < "$KUBE_VIP_API_YAML" | kubectl apply -f -
 
-echo "✅ kube-vip deployed successfully!"
-echo "🎉 Kubernetes API should now be reachable via: https://${K3S_API_IP}:6443"
+echo "✅ kube-vip for Kubernetes API deployed!"
+
+# --- Optionally Deploy kube-vip for LoadBalancer Services ---
+if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
+    if [ ! -f "$KUBE_VIP_LB_YAML" ]; then
+        echo "❌ kube-vip LB YAML file '$KUBE_VIP_LB_YAML' not found!"
+        exit 1
+    fi
+
+    export VIP_LB_RANGE
+
+    echo "🚀 Deploying kube-vip for LoadBalancer Services with range $VIP_LB_RANGE on interface $VIP_INTERFACE"
+
+    envsubst < "$KUBE_VIP_LB_YAML" | kubectl apply -f -
+
+    echo "✅ kube-vip for LoadBalancer Services deployed!"
+else
+    echo "⚙️ Skipping kube-vip LoadBalancer deployment as per config."
+fi
+
+echo "🎉 All done! Kubernetes API and optional LoadBalancer kube-vip are ready!"
