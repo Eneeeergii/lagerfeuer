@@ -5,7 +5,7 @@ set -o pipefail  # Catch pipeline errors
 
 # Files
 CONFIG_FILE="./config.env"
-KUBE_VIP_YAML="./kube-vip-ds.yaml"  # YAML template with placeholders
+KUBE_VIP_YAML="./kubeVIP_kube-API.yaml"  # YAML template with placeholders
 
 # --- Load Configuration ---
 if [ ! -f "$CONFIG_FILE" ]; then
