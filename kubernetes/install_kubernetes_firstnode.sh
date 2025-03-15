@@ -48,18 +48,6 @@ curl -sfL https://get.k3s.io | sh -
 
 echo "✅ K3s installed successfully!"
 
-# --- Fix kubeconfig ---
-KUBECONFIG_FILE="/etc/rancher/k3s/k3s.yaml"
-
-if [ -f "$KUBECONFIG_FILE" ]; then
-    echo "🔧 Replacing 127.0.0.1 with ${K3S_API_IP} in $KUBECONFIG_FILE"
-    sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$KUBECONFIG_FILE"
-    echo "✅ K3s kubeconfig updated to use ${K3S_API_IP}"
-else
-    echo "❌ K3s kubeconfig not found at $KUBECONFIG_FILE!"
-    exit 1
-fi
-
 # --- Deploy kube-vip for Kubernetes API VIP ---
 if [ ! -f "$KUBE_VIP_API_YAML" ]; then
     echo "❌ kube-vip API YAML file '$KUBE_VIP_API_YAML' not found!"
@@ -94,3 +82,15 @@ else
 fi
 
 echo "🎉 All done! Kubernetes API and optional LoadBalancer kube-vip are ready!"
+
+# --- Fix kubeconfig ---
+KUBECONFIG_FILE="/etc/rancher/k3s/k3s.yaml"
+
+if [ -f "$KUBECONFIG_FILE" ]; then
+    echo "🔧 Replacing 127.0.0.1 with ${K3S_API_IP} in $KUBECONFIG_FILE"
+    sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$KUBECONFIG_FILE"
+    echo "✅ K3s kubeconfig updated to use ${K3S_API_IP}"
+else
+    echo "❌ K3s kubeconfig not found at $KUBECONFIG_FILE!"
+    exit 1
+fi
