@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
   labels:
     app.kubernetes.io/name: kube-vip-lb-ds
-    app.kubernetes.io/version: v0.8.9
+    app.kubernetes.io/version: v0.5.12
 spec:
   selector:
     matchLabels:
@@ -14,7 +14,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: kube-vip-lb-ds
-        app.kubernetes.io/version: v0.8.9
+        app.kubernetes.io/version: v0.5.12
     spec:
       containers:
       - args:
@@ -32,15 +32,13 @@ spec:
           value: "24"
         - name: svc_enable
           value: "true"
-        - name: svc_election
-          value: "true"
         - name: svc_namespace
           value: ""  # Watch all namespaces
         - name: address_range
           value: "${VIP_LB_RANGE}"
         - name: prometheus_server
           value: ":2113"
-        image: ghcr.io/kube-vip/kube-vip:v0.8.9
+        image: ghcr.io/kube-vip/kube-vip:v0.5.12
         imagePullPolicy: IfNotPresent
         name: kube-vip
         securityContext:
