@@ -21,9 +21,11 @@ check_config_env $CONFIG_FILE
 export INSTALL_K3S_EXEC="$INSTALL_K3S_FIRSTNODE"
 export INSTALL_K3S_VERSION="$K3S_VERSION"
 export K3S_TOKEN
+echo $K3S_TOKEN
 
 echo "🚀 Installing K3s version $K3S_VERSION with options: $INSTALL_K3S_EXEC"
 curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -
+echo $K3S_TOKEN
 
 echo "✅ K3s installed successfully!"
 
