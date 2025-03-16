@@ -18,8 +18,7 @@ spec:
     spec:
       containers:
       - args:
-        - manager
-        - --lb
+        - --services
         env:
         - name: vip_arp
           value: "true"
@@ -27,12 +26,12 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
-        - name: vip_interface
+        - name: vip_servicesinterface
           value: "${VIP_INTERFACE}"
         - name: address_range
           value: "${VIP_LB_RANGE}"
         - name: vip_cidr
-          value: "24"
+          value: "32"
         - name: svc_enable
           value: "true"
         - name: svc_namespace
