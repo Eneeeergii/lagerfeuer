@@ -21,11 +21,9 @@ check_config_env $CONFIG_FILE
 export INSTALL_K3S_EXEC="$INSTALL_K3S_FIRSTNODE"
 export INSTALL_K3S_VERSION="$K3S_VERSION"
 export K3S_TOKEN
-echo $K3S_TOKEN
 
 echo "🚀 Installing K3s version $K3S_VERSION with options: $INSTALL_K3S_EXEC"
 curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s -
-echo $K3S_TOKEN
 
 echo "✅ K3s installed successfully!"
 
@@ -92,7 +90,7 @@ if [ "$ADDITIONAL_WORKERS" == "true" ]; then
         ssh -i "$SSH_KEY" "$SSH_USER@$worker" << EOF
 curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN K3S_URL=https://$K3S_API_IP:6443 sh -
 EOF
-        echo "✅ K3s installed and $worker is added to K3s Cluster!"
+        echo "✅ Worker Node $worker is added to K3s Cluster!"
     done
 elif [ "$ADDITIONAL_WORKERS" == "false" ]; then
     echo "✅ No Worker Nodes added to the Cluster"
@@ -100,4 +98,3 @@ else
     echo "Please Check ADDITIONAL_WORKERS Parameter, actual value is: $ADDITIONAL_WORKERS"
     exit 1
 fi
-
