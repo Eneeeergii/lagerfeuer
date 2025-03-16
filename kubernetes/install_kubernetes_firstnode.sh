@@ -45,7 +45,7 @@ if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
     envsubst < "$KUBE_VIP_LB_YAML" | kubectl apply -f -
     echo "✅ kube-vip for LoadBalancer Services deployed!"
     echo "🎉 All done! Kubernetes API and optional LoadBalancer kube-vip are ready!"
-elif
+else
     echo "⚙️ Skipping kube-vip LoadBalancer deployment as per config."
     echo "🎉 All done! Kubernetes API kube-vip are ready!"
 fi
