@@ -5,8 +5,7 @@ set -o pipefail  # Catch pipeline errors
 
 # Functions
 source ./functions/check_config_env.sh
-source ./functions/check_deployments.sh
-source ./functions/add_master_nodes.sh
+source ./functions/check_files.sh
 
 # Files
 CONFIG_FILE="./config.env"
