@@ -90,29 +90,6 @@ FIRST_MASTER="${MASTER_NODES[0]}"
 echo "🏁 Bootstrapping first master node: $FIRST_MASTER"
 install_master
 
-# Wait a bit to ensure first master is ready
-sleep 20
-
-# --- Fetch kubeconfig and token if dynamic token needed ---
-# Optional step: if K3S_TOKEN was not predefined, pull it dynamically
-# K3S_TOKEN=$(ssh -i "$SSH_KEY" "$SSH_USER@$FIRST_MASTER" "sudo cat /var/lib/rancher/k3s/server/node-token")
-
-# --- Join additional masters ---
-if [ "${#MASTER_NODES[@]}" -gt 1 ]; then
-  for master_ip in "${MASTER_NODES[@]:1}"; do
-    join_master "$master_ip" "$FIRST_MASTER"
-  done
-fi
-
-# --- Install Workers ---
-if [ -z "$WORKERS" ]; then
-    echo "⚠️ WORKERS is empty, continuing without workers..."
-else
-    for worker_ip in "${WORKER_NODES[@]}"; do
-        install_worker "$worker_ip" "$FIRST_MASTER"
-    done
-fi
-
 # --- Deploy kube-vip for Kubernetes API VIP ---
 if [ ! -f "$KUBE_VIP_API_YAML" ]; then
     echo "❌ kube-vip API YAML file '$KUBE_VIP_API_YAML' not found!"
@@ -139,6 +116,29 @@ sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$LOCAL_KUBECONFIG"
 echo "✅ K3s kubeconfig updated and saved to $LOCAL_KUBECONFIG"
 
 echo "🎉 All done! K3s HA cluster is ready!"
+
+# Wait a bit to ensure first master is ready
+sleep 20
+
+# --- Fetch kubeconfig and token if dynamic token needed ---
+# Optional step: if K3S_TOKEN was not predefined, pull it dynamically
+# K3S_TOKEN=$(ssh -i "$SSH_KEY" "$SSH_USER@$FIRST_MASTER" "sudo cat /var/lib/rancher/k3s/server/node-token")
+
+# --- Join additional masters ---
+if [ "${#MASTER_NODES[@]}" -gt 1 ]; then
+  for master_ip in "${MASTER_NODES[@]:1}"; do
+    join_master "$master_ip" "$FIRST_MASTER"
+  done
+fi
+
+# --- Install Workers ---
+if [ -z "$WORKERS" ]; then
+    echo "⚠️ WORKERS is empty, continuing without workers..."
+else
+    for worker_ip in "${WORKER_NODES[@]}"; do
+        install_worker "$worker_ip" "$FIRST_MASTER"
+    done
+fi
 
 # --- Optionally Deploy kube-vip for LoadBalancer Services ---
 if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
