@@ -3,157 +3,83 @@
 set -e  # Stop on error
 set -o pipefail  # Catch pipeline errors
 
+# Functions
+source ./functions/check_config_env.sh
+source ./functions/check_deployments.sh
+source ./functions/add_master_nodes.sh
+
 # Files
 CONFIG_FILE="./config.env"
 KUBE_VIP_API_YAML="./kube-vip-api.yaml"
 KUBE_VIP_LB_YAML="./kube-vip-lb.yaml"
+KUBECONFIG_FILE="/etc/rancher/k3s/k3s.yaml"
 
-# --- Load Configuration ---
-if [ ! -f "$CONFIG_FILE" ]; then
-    echo "❌ Configuration file '$CONFIG_FILE' not found!"
-    exit 1
-fi
+# Check Deployments & Config Env
+check_deployment $KUBE_VIP_API_YAML $KUBE_VIP_LB_YAML
+check_config_env $CONFIG_FILE
 
-source "$CONFIG_FILE"
-echo "✅ Loaded configuration from $CONFIG_FILE"
+# --- Install K3s on First Node ---
+export INSTALL_K3S_EXEC="$INSTALL_K3S_FIRSTNODE"
+export INSTALL_K3S_VERSION="$K3S_VERSION"
+export K3S_TOKEN
 
-# --- Validate Required Variables ---
-if [ -z "$K3S_VERSION" ]; then
-    echo "❌ K3S_VERSION is not set!"
-    exit 1
-fi
+echo "🚀 Installing K3s version $K3S_VERSION with options: $INSTALL_K3S_EXEC"
+curl -sfL https://get.k3s.io | sh -
 
-if [ -z "$K3S_TOKEN" ]; then
-    echo "❌ K3S_TOKEN is not set!"
-    exit 1
-fi
-
-if [ -z "$K3S_API_IP" ]; then
-    echo "❌ K3S_API_IP is not set!"
-    exit 1
-fi
-
-if [ -z "$VIP_INTERFACE" ]; then
-    echo "❌ VIP_INTERFACE is not set!"
-    exit 1
-fi
-
-if [ -z "$MASTERS" ]; then
-    echo "❌ MASTERS is not set!"
-    exit 1
-fi
-
-if [ -z "$WORKERS" ]; then
-    echo "⚠️ WORKERS is empty, continuing without workers..."
-fi
-
-# --- Parse master/worker IPs ---
-IFS=',' read -r -a MASTER_NODES <<< "$MASTERS"
-IFS=',' read -r -a WORKER_NODES <<< "$WORKERS"
-
-# --- K3s Token ---
-if [ -z "$K3S_TOKEN" ]; then
-    K3S_TOKEN=$(openssl rand -hex 20)
-    echo "🔑 Auto-generated K3S_TOKEN: $K3S_TOKEN"
-fi
-
-# --- Install K3s Functions ---
-install_master() {
-    export INSTALL_K3S_EXEC
-    export K3S_VERSION
-    echo "🚀 Installing K3s version $K3S_VERSION with options: $INSTALL_K3S_EXEC"
-    curl -sfL https://get.k3s.io | sh -
-}
-
-join_master() {
-  local node_ip=$1
-  local first_master_ip=$2
-  echo "🔗 Joining K3s master $node_ip to cluster via $first_master_ip"
-
-  ssh -i "$SSH_KEY" "$SSH_USER@$node_ip" << EOF
-curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN K3S_NODE_NAME=$node_ip INSTALL_K3S_VERSION=$K3S_VERSION sh -s - server --server https://$first_master_ip:6443 --tls-san $K3S_API_IP --node-taint CriticalAddonsOnly=true:NoExecute
-EOF
-}
-
-install_worker() {
-  local node_ip=$1
-  local master_ip=$2
-  echo "👷 Installing K3s worker on $node_ip"
-
-  ssh -i "$SSH_KEY" "$SSH_USER@$node_ip" << EOF
-curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN K3S_NODE_NAME=$node_ip INSTALL_K3S_VERSION=$K3S_VERSION K3S_URL=https://$master_ip:6443 sh -
-EOF
-}
-
-# --- Install K3s Masters ---
-FIRST_MASTER="${MASTER_NODES[0]}"
-echo "🏁 Bootstrapping first master node: $FIRST_MASTER"
-install_master
+echo "✅ K3s installed successfully!"
 
 # --- Deploy kube-vip for Kubernetes API VIP ---
-if [ ! -f "$KUBE_VIP_API_YAML" ]; then
-    echo "❌ kube-vip API YAML file '$KUBE_VIP_API_YAML' not found!"
-    exit 1
-fi
-
-echo "🚀 Deploying kube-vip for Kubernetes API on $FIRST_MASTER"
 export K3S_API_IP
 export VIP_INTERFACE
 
-ssh -i "$SSH_KEY" "$SSH_USER@$FIRST_MASTER" "kubectl apply -f -" < <(envsubst < "$KUBE_VIP_API_YAML")
+echo "🚀 Deploying kube-vip for Kubernetes API at $K3S_API_IP on interface $VIP_INTERFACE"
+envsubst < "$KUBE_VIP_API_YAML" | kubectl apply -f -
 echo "✅ kube-vip for Kubernetes API deployed!"
 
-# --- Fix kubeconfig ---
-KUBECONFIG_FILE="/etc/rancher/k3s/k3s.yaml"
-LOCAL_KUBECONFIG="./k3s-kubeconfig.yaml"
-
-echo "📥 Downloading kubeconfig from $FIRST_MASTER"
-scp -i "$SSH_KEY" "$SSH_USER@$FIRST_MASTER:$KUBECONFIG_FILE" "$LOCAL_KUBECONFIG"
-
-echo "🔧 Replacing 127.0.0.1 with ${K3S_API_IP} in $LOCAL_KUBECONFIG"
-sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$LOCAL_KUBECONFIG"
-
-echo "✅ K3s kubeconfig updated and saved to $LOCAL_KUBECONFIG"
-
-echo "🎉 All done! K3s HA cluster is ready!"
-
-# Wait a bit to ensure first master is ready
-sleep 20
-
-# --- Fetch kubeconfig and token if dynamic token needed ---
-# Optional step: if K3S_TOKEN was not predefined, pull it dynamically
-# K3S_TOKEN=$(ssh -i "$SSH_KEY" "$SSH_USER@$FIRST_MASTER" "sudo cat /var/lib/rancher/k3s/server/node-token")
-
-# --- Join additional masters ---
-if [ "${#MASTER_NODES[@]}" -gt 1 ]; then
-  for master_ip in "${MASTER_NODES[@]:1}"; do
-    join_master "$master_ip" "$FIRST_MASTER"
-  done
-fi
-
-# --- Install Workers ---
-if [ -z "$WORKERS" ]; then
-    echo "⚠️ WORKERS is empty, continuing without workers..."
-else
-    for worker_ip in "${WORKER_NODES[@]}"; do
-        install_worker "$worker_ip" "$FIRST_MASTER"
-    done
-fi
-
 # --- Optionally Deploy kube-vip for LoadBalancer Services ---
+export VIP_LB_RANGE
+export DEPLOY_LB_KUBEVIP
+export VIP_INTERFACE
+
 if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
-    if [ ! -f "$KUBE_VIP_LB_YAML" ]; then
-        echo "❌ kube-vip LB YAML file '$KUBE_VIP_LB_YAML' not found!"
-        exit 1
-    fi
-
-    export VIP_LB_RANGE
-
-    echo "🚀 Deploying kube-vip for LoadBalancer Services on $FIRST_MASTER with range $VIP_LB_RANGE"
-
-    ssh -i "$SSH_KEY" "$SSH_USER@$FIRST_MASTER" "kubectl apply -f -" < <(envsubst < "$KUBE_VIP_LB_YAML")
-
+    echo "🚀 Deploying kube-vip for LoadBalancer Services with range $VIP_LB_RANGE on interface $VIP_INTERFACE"
+    envsubst < "$KUBE_VIP_LB_YAML" | kubectl apply -f -
     echo "✅ kube-vip for LoadBalancer Services deployed!"
-else
+    echo "🎉 All done! Kubernetes API and optional LoadBalancer kube-vip are ready!"
+elif
     echo "⚙️ Skipping kube-vip LoadBalancer deployment as per config."
+    echo "🎉 All done! Kubernetes API kube-vip are ready!"
 fi
+
+# --- Add API IP in Kubeconfig ---
+check_kubeconfig $KUBECONFIG_FILE
+
+echo "🔧 Replacing 127.0.0.1 with ${K3S_API_IP} in $KUBECONFIG_FILE"
+sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$KUBECONFIG_FILE"
+echo "✅ K3s kubeconfig updated to use ${K3S_API_IP}"
+
+# --- Add further Master Nodes ---
+export INSTALL_K3S_EXEC="$ADD_K3S_MASTER"
+export HA_CLUSTER
+
+if [ "$HA_CLUSTER" == "true" ]; then
+    IFS=',' read -r -a MASTER_NODES <<< "$MASTERS"
+    export SSH_USER
+    export SSH_KEY
+
+    for master in "${MASTER_NODES[@]}"; do
+        echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
+        ssh -i "$SSH_KEY" "$SSH_USER@$master" << EOF
+curl -sfL https://get.k3s.io | sh -
+EOF
+        echo "✅ K3s installed and $master is added to K3s Cluster!"
+    done
+elif [ "$HA_CLUSTER" == "false" ]; then
+    echo "✅ K3S installed as a Single Node"
+else
+    echo "Please Check HA_CLUSTER Parameter, actual value is: $HA_CLUSTER"
+    exit 1
+fi
+
+# --- Adding WORKER Nodes ---
+
