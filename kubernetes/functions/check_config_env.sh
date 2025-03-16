@@ -38,14 +38,14 @@ check_config_env(){
         exit 1
     fi
 
-    if [ "$HA_CLUSTER" == "true"]; then
+    if [ "$HA_CLUSTER" == "true" ]; then
         if [ -z "$MASTERS" ]; then
             echo "❌ No MASTERS are set!"
             exit 1
         fi
     fi
 
-    if [ "$ADDITIONAL_WORKERS" == "true"]; then
+    if [ "$ADDITIONAL_WORKERS" == "true" ]; then
         if [ -z "$WORKERS" ]; then
             echo "❌ No WORKERS are set!"
             exit 1
@@ -62,7 +62,7 @@ check_config_env(){
         exit 1
     fi
 
-    if [ "$DEPLOY_LB_KUBEVIP" == "true"]; then
+    if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
         if [ -z "$VIP_LB_RANGE" ]; then
             echo "❌ VIP_LB_RANGE is not set!"
             exit 1
