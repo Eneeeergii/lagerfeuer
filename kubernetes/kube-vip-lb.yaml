@@ -19,6 +19,7 @@ spec:
       containers:
       - args:
         - manager
+        - --services
         env:
         - name: vip_arp
           value: "true"
