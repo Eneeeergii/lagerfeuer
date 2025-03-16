@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
   labels:
     app.kubernetes.io/name: kube-vip-lb-ds
-    app.kubernetes.io/version: v0.8.9
+    app.kubernetes.io/version: v0.5.12
 spec:
   selector:
     matchLabels:
@@ -14,7 +14,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: kube-vip-lb-ds
-        app.kubernetes.io/version: v0.8.9
+        app.kubernetes.io/version: v0.5.12
     spec:
       containers:
       - args:
@@ -28,19 +28,17 @@ spec:
               fieldPath: spec.nodeName
         - name: vip_interface
           value: "${VIP_INTERFACE}"
+        - name: address_range
+          value: "${VIP_LB_RANGE}"
         - name: vip_cidr
           value: "24"
         - name: svc_enable
           value: "true"
-        - name: svc_election
-          value: "true"
         - name: svc_namespace
           value: ""  # Watch all namespaces
-        - name: address_range
-          value: "${VIP_LB_RANGE}"
         - name: prometheus_server
           value: ":2113"
-        image: ghcr.io/kube-vip/kube-vip:v0.8.9
+        image: ghcr.io/kube-vip/kube-vip:v0.5.12
         imagePullPolicy: IfNotPresent
         name: kube-vip
         securityContext:
@@ -72,22 +70,10 @@ rules:
     verbs: ["update"]
   - apiGroups: [""]
     resources: ["services"]
-    verbs: ["get", "list", "watch", "update", "patch"]  # Added explicit update on services
-  - apiGroups: [""]
-    resources: ["endpoints"]
-    verbs: ["list", "get", "watch", "update", "create", "delete", "patch"]
-  - apiGroups: [""]
-    resources: ["nodes"]
-    verbs: ["list", "get", "watch"]
+    verbs: ["get", "list", "watch", "update", "patch"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
     verbs: ["list", "get", "watch", "update", "create"]
-  - apiGroups: ["discovery.k8s.io"]
-    resources: ["endpointslices"]
-    verbs: ["list", "get", "watch", "update"]
-  - apiGroups: [""]
-    resources: ["pods"]
-    verbs: ["list"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
