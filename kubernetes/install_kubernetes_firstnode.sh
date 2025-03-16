@@ -59,6 +59,8 @@ fi
 
 # --- Install K3s Functions ---
 install_master() {
+    export INSTALL_K3S_EXEC
+    export K3S_VERSION
     echo "🚀 Installing K3s version $K3S_VERSION with options: $INSTALL_K3S_EXEC"
     curl -sfL https://get.k3s.io | sh -
 }
