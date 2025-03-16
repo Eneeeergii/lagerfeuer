@@ -9,6 +9,7 @@ metadata:
   name: nginx-lb
   namespace: nginx
 spec:
+  loadBalancerClass: kube-vip.io/kube-vip-class
   type: LoadBalancer
   selector:
     app: nginx
