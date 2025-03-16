@@ -33,8 +33,8 @@ check_config_env(){
         exit 1
     fi
 
-    if [ -z "$INSTALL_K3S_EXEC" ]; then
-        echo "❌ INSTALL_K3S_EXEC is not set!"
+    if [ -z "$INSTALL_K3S_FIRSTNODE" ]; then
+        echo "❌ INSTALL_K3S_FIRSTNODE is not set!"
         exit 1
     fi
 
