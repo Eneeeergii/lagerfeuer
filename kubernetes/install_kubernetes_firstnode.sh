@@ -59,12 +59,8 @@ fi
 
 # --- Install K3s Functions ---
 install_master() {
-  local node_ip=$1
-  echo "🚀 Installing K3s master on $node_ip"
-
-  ssh -i "$SSH_KEY" "$SSH_USER@$node_ip" << EOF
-curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN K3S_NODE_NAME=$node_ip INSTALL_K3S_VERSION=$K3S_VERSION sh -s - server --cluster-init --tls-san $K3S_API_IP --node-taint CriticalAddonsOnly=true:NoExecute
-EOF
+    echo "🚀 Installing K3s version $K3S_VERSION with options: $INSTALL_K3S_EXEC"
+    curl -sfL https://get.k3s.io | sh -
 }
 
 join_master() {
@@ -90,7 +86,7 @@ EOF
 # --- Install K3s Masters ---
 FIRST_MASTER="${MASTER_NODES[0]}"
 echo "🏁 Bootstrapping first master node: $FIRST_MASTER"
-install_master "$FIRST_MASTER"
+install_master
 
 # Wait a bit to ensure first master is ready
 sleep 20
