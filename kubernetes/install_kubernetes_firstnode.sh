@@ -58,6 +58,8 @@ sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$KUBECONFIG_FILE"
 echo "✅ K3s kubeconfig updated to use ${K3S_API_IP}"
 
 # --- Add further Master Nodes ---
+export INSTALL_K3S_EXEC="$ADD_K3S_MASTER"
+
 if [ "$HA_CLUSTER" == "true" ]; then
     IFS=',' read -r -a MASTER_NODES <<< "$MASTERS"
     export SSH_USER
