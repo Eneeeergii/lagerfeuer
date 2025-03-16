@@ -82,3 +82,22 @@ fi
 
 # --- Adding WORKER Nodes ---
 
+if [ "$ADDITIONAL_WORKERS" == "true" ]; then
+    IFS=',' read -r -a WORKER_NODES <<< "$WORKERS"
+    export SSH_USER
+    export SSH_KEY
+
+    for worker in "${WORKER_NODES[@]}"; do
+        echo "🚀 Installing K3s version $K3S_VERSION on $worker and adding it to the K3s Cluster"
+        ssh -i "$SSH_KEY" "$SSH_USER@$worker" << EOF
+curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN K3S_URL=https://$K3S_API_IP:6443 sh -
+EOF
+        echo "✅ K3s installed and $worker is added to K3s Cluster!"
+    done
+elif [ "$ADDITIONAL_WORKERS" == "false" ]; then
+    echo "✅ No Worker Nodes added to the Cluster"
+else
+    echo "Please Check ADDITIONAL_WORKERS Parameter, actual value is: $ADDITIONAL_WORKERS"
+    exit 1
+fi
+
