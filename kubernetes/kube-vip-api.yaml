@@ -43,7 +43,7 @@ spec:
         - name: vip_interface
           value: "${VIP_INTERFACE}"
         - name: vip_cidr
-          value: "32"
+          value: "24"
         - name: dns_mode
           value: first
         - name: cp_enable
