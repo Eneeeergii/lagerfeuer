@@ -15,6 +15,7 @@ check_config_env(){
     # --- Validate Required Variables ---
     if [ -z "$K3S_VERSION" ]; then
         echo "❌ K3S_VERSION is not set!"
+        echo $K3S_VERSION
         exit 1
     fi
 
