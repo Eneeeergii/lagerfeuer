@@ -11,8 +11,17 @@ install_helm(){
     if command_exists helm; then
         echo "✅ Helm is already installed. Version:"
         helm version
-        echo "🔄 Refreshing Helm Repositories..."
-        helm repo update
+
+        echo "🔍 Checking for existing Helm repositories..."
+        REPO_LIST=$(helm repo list -o yaml 2>/dev/null | grep "name:" || true)
+
+        if [ -n "$REPO_LIST" ]; then
+            echo "📦 Helm repositories found. Updating repos..."
+            helm repo update
+            echo "✅ Helm repositories updated."
+        else
+            echo "ℹ️ No exisiting Helm repositories found."
+        fi
     else
         echo "❌ Helm is not installed. Installing Helm..."
 
