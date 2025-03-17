@@ -41,3 +41,5 @@ install_helm(){
     fi
 
 }
+
+install_helm
