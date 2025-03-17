@@ -1,3 +1,4 @@
+## NOT IN USE
 set -e
 
 remove_sudoers_permission_remote(){
