@@ -1,30 +1,6 @@
 #!/bin/bash
 
-# Helm Installationsskript für AlmaLinux 9
-
 set -e  # Beendet das Skript bei Fehlern
-
-# Prüfen, ob Helm bereits installiert ist
-echo "========================================"
-echo "📌 Prüfe, ob Helm installiert ist..."
-echo "========================================"
-if ! command -v helm &> /dev/null; then
-    echo "🔧 Installiere Helm..."
-    curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-else
-    echo "✅ Helm ist bereits installiert. Überspringe Installation."
-fi
-
-# PATH sicherstellen
-export PATH=$PATH:/usr/local/bin
-
-# Helm-Repository-Updates durchführen
-echo "🔄 Aktualisiere Helm-Repositories..."
-/usr/local/bin/helm repo update
-
-# Überprüfung der Installation
-echo "🔍 Überprüfe die Helm-Version..."
-/usr/local/bin/helm version
 
 read -rp "Bitte gebe den Namespace ein, indem die Operatoren installiert werden sollen: " NAMESPACE
 
