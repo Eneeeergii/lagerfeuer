@@ -17,8 +17,6 @@ KUBECONFIG_FILE="/etc/rancher/k3s/k3s.yaml"
 check_deployment $KUBE_VIP_API_YAML $KUBE_VIP_LB_YAML
 check_config_env $CONFIG_FILE
 
-exit 1
-
 # --- Install K3s on First Node ---
 export INSTALL_K3S_EXEC="$INSTALL_K3S_FIRSTNODE"
 export INSTALL_K3S_VERSION="$K3S_VERSION"
