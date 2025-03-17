@@ -12,10 +12,15 @@ check_config_env(){
     source "$CONFIG_FILE"
     echo "✅ Loaded configuration from $CONFIG_FILE"
 
+    echo $K3S_VERSION
+    echo $K3S_TOKEN
+    echo $K3S_API_IP
+    echo $VIP_INTERFACE
+    echo $INSTALL_K3S_FIRSTNODE
+
     # --- Validate Required Variables ---
     if [ -z "$K3S_VERSION" ]; then
         echo "❌ K3S_VERSION is not set!"
-        echo $K3S_VERSION
         exit 1
     fi
 
