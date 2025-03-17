@@ -1,3 +1,5 @@
+set -e
+
 remove_sudoers_permission_remote(){
 
     HOST=$1
