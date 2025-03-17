@@ -11,6 +11,8 @@ install_helm(){
     if command_exists helm; then
         echo "✅ Helm is already installed. Version:"
         helm version
+        echo "🔄 Refreshing Helm Repositories..."
+        helm repo update
     else
         echo "❌ Helm is not installed. Installing Helm..."
 
@@ -41,5 +43,3 @@ install_helm(){
     fi
 
 }
-
-install_helm
