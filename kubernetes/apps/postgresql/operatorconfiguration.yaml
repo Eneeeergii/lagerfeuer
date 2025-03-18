@@ -1,6 +1,9 @@
 apiVersion: "acid.zalan.do/v1"
 kind: OperatorConfiguration
 metadata:
+  labels:
+    app.kubernetes.io/instance: postgres-operator
+    app.kubernetes.io/name: postgres-operator
   name: postgresql-operator
   namespace: ${POSTGRESQL_NAMESPACE}
 configuration:
