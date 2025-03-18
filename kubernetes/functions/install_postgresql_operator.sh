@@ -108,7 +108,7 @@ install_postgresql_operator(){
         echo "✅ Custom Ressource Definition created"
 
         echo "⚙️ Team Creating Custom Ressource Definition"
-        kubectl apply -f $POSTGRESQL_PSQL_CRD_MANIFEST
+        kubectl apply -f $POSTGRESQL_PSQL_TEAM_CRD_MANIFEST
         echo "✅ Team Custom Ressource Definition created"
 
         echo "⚙️ Creating Operator Configuration"
