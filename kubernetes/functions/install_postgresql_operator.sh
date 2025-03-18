@@ -66,9 +66,13 @@ check_manifests(){
     else
         echo "✅ YAML file $POSTGRESQL_SERVICE_MANIFEST loaded!"
     fi
+
 }
 
 install_postgresql_operator(){
+
+    check_parameters
+    check_manifests
 
     #Check if Operator should be installed
     if [ "$POSTGRESQL_OPERATOR_INSTALL" == "true" ]; then
@@ -76,10 +80,6 @@ install_postgresql_operator(){
         export POSTGRESQL_NAMESPACE
         export POSTGRESQL_SPILO_VERSION
         export POSTGRESQL_OPERATOR_VERSION
-
-        echo $POSTGRESQL_NAMESPACE
-        echo $POSTGRESQL_SPILO_VERSION
-        echo $POSTGRESQL_OPERATOR_VERSION
         
         echo "⚙️ Creating Namespace"
         envsubst < $POSTGRESQL_NAMESPACE_MANIFEST | sed 's/["\\]//g' | kubectl apply -f - 
@@ -102,6 +102,9 @@ install_postgresql_operator(){
         echo "✅ Service created"
 
         #unset $POSTGRESQL_NAMESPACE
+        unset $POSTGRESQL_NAMESPACE
+        unset $POSTGRESQL_SPILO_VERSION
+        unset $POSTGRESQL_OPERATOR_VERSION
 
     elif [ "$POSTGRESQL_OPERATOR_INSTALL" == "false" ]; then
 
