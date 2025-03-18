@@ -2,14 +2,24 @@
 set -e
 
 #Enable this and the function calls at the bottom, to test this script isolated
-CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
-source "$CONFIG_FILE"
-echo "✅ Loaded configuration from $CONFIG_FILE"
+#CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
+#source "$CONFIG_FILE"
+#echo "✅ Loaded configuration from $CONFIG_FILE"
+
+check_manifests(){
+
+    if [ ! -f "$POSTGRESQL_MANIFEST_YAML" ]; then
+        echo "❌ YAML file $POSTGRESQL_MANIFEST_YAML not found!"
+        exit 1
+    else
+        echo "✅ YAML file $POSTGRESQL_MANIFEST_YAML loaded!"
+    fi
+
+}
 
 check_parameters(){
 
     if [ "$POSTGRESQL_OPERATOR_INSTALL" == "true" ]; then
-        
         if [ -z "$POSTGRESQL_NAMESPACE" ]; then
             echo "❌ NAMESPACE is not set!"
             exit 1
@@ -26,17 +36,6 @@ check_parameters(){
         echo "⚙️ Skipping installation of PostgreSQL Operator"
     else
         echo "❌ Value of POSTGRESQL_OPERATOR_INSTALL: $POSTGRESQL_OPERATOR_INSTALL is not allowed!"
-    fi
-
-}
-
-check_manifests(){
-
-    if [ ! -f "$POSTGRESQL_MANIFEST_YAML" ]; then
-        echo "❌ YAML file $POSTGRESQL_MANIFEST_YAML not found!"
-        exit 1
-    else
-        echo "✅ YAML file $POSTGRESQL_MANIFEST_YAML loaded!"
     fi
 
 }
@@ -71,6 +70,6 @@ install_postgresql_operator(){
 }
 
 #Function Calls for isolation test
-check_parameters
-check_manifests
-install_postgresql_operator
+#check_parameters
+#check_manifests
+#install_postgresql_operator
