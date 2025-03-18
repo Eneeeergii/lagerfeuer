@@ -6,20 +6,10 @@ set -e
 #source "$CONFIG_FILE"
 #echo "✅ Loaded configuration from $CONFIG_FILE"
 
-check_manifests(){
-
-    if [ ! -f "$POSTGRESQL_MANIFEST_YAML" ]; then
-        echo "❌ YAML file $POSTGRESQL_MANIFEST_YAML not found!"
-        exit 1
-    else
-        echo "✅ YAML file $POSTGRESQL_MANIFEST_YAML loaded!"
-    fi
-
-}
-
 check_parameters(){
 
     if [ "$POSTGRESQL_OPERATOR_INSTALL" == "true" ]; then
+        
         if [ -z "$POSTGRESQL_NAMESPACE" ]; then
             echo "❌ NAMESPACE is not set!"
             exit 1
@@ -40,6 +30,59 @@ check_parameters(){
 
 }
 
+check_manifests(){
+
+    if [ ! -f "$POSTGRESQL_NAMESPACE_MANIFEST" ]; then
+        echo "❌ YAML file $POSTGRESQL_NAMESPACE_MANIFEST not found!"
+        exit 1
+    else
+        echo "✅ YAML file $POSTGRESQL_NAMESPACE_MANIFEST loaded!"
+    fi
+
+    if [ ! -f "$POSTGRESQL_RBAC_MANIFEST" ]; then
+        echo "❌ YAML file $POSTGRESQL_RBAC_MANIFEST not found!"
+        exit 1
+    else
+        echo "✅ YAML file $POSTGRESQL_RBAC_MANIFEST loaded!"
+    fi
+
+    if [ ! -f "$POSTGRESQL_OPERATOR_CRD_MANIFEST" ]; then
+        echo "❌ YAML file $POSTGRESQL_OPERATOR_CRD_MANIFEST not found!"
+        exit 1
+    else
+        echo "✅ YAML file $POSTGRESQL_OPERATOR_CRD_MANIFEST loaded!"
+    fi
+
+    if [ ! -f "$POSTGRESQL_POSTGRESQLS_CRD_MANIFEST" ]; then
+        echo "❌ YAML file $POSTGRESQL_POSTGRESQLS_CRD_MANIFEST not found!"
+        exit 1
+    else
+        echo "✅ YAML file $POSTGRESQL_POSTGRESQLS_CRD_MANIFEST loaded!"
+    fi
+
+    if [ ! -f "$POSTGRESQL_POSTGRESQLTEAM_CRD_MANIFEST" ]; then
+        echo "❌ YAML file $POSTGRESQL_POSTGRESQLTEAM_CRD_MANIFEST not found!"
+        exit 1
+    else
+        echo "✅ YAML file $POSTGRESQL_POSTGRESQLTEAM_CRD_MANIFEST loaded!"
+    fi
+
+    if [ ! -f "$POSTGRESQL_OPERATORCONFIGURATION_MANIFEST" ]; then
+        echo "❌ YAML file $POSTGRESQL_OPERATORCONFIGURATION_MANIFEST not found!"
+        exit 1
+    else
+        echo "✅ YAML file $POSTGRESQL_OPERATORCONFIGURATION_MANIFEST loaded!"
+    fi
+
+    if [ ! -f "$POSTGRESQL_SERVICE_MANIFEST" ]; then
+        echo "❌ YAML file $POSTGRESQL_SERVICE_MANIFEST not found!"
+        exit 1
+    else
+        echo "✅ YAML file $POSTGRESQL_SERVICE_MANIFEST loaded!"
+    fi
+    
+}
+
 install_postgresql_operator(){
 
     check_parameters
@@ -52,9 +95,33 @@ install_postgresql_operator(){
         export POSTGRESQL_SPILO_VERSION
         export POSTGRESQL_OPERATOR_VERSION
         
-        echo "⚙️ Installing PostgreSQL Operator by Zalando"
-        envsubst < $POSTGRESQL_MANIFEST_YAML | sed 's/["\\]//g' | kubectl apply -f - 
-        echo "✅ "
+        echo "⚙️ Creating Namespace"
+        envsubst < $POSTGRESQL_NAMESPACE_MANIFEST | sed 's/["\\]//g' | kubectl apply -f - 
+        echo "✅ Namespace created"
+
+        echo "⚙️ Creating Cluster Role, Service Account & Cluster Role Binding"
+        envsubst < $POSTGRESQL_RBAC_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
+        echo "✅ Cluster Role, Service Account & Cluster Role Binding created"
+
+        echo "⚙️ Creating Custom Ressource Definition"
+        kubectl apply -f $POSTGRESQL_PSQL_CRD_MANIFEST
+        echo "✅ Custom Ressource Definition created"
+
+        echo "⚙️ Team Creating Custom Ressource Definition"
+        kubectl apply -f $POSTGRESQL_PSQL_TEAM_CRD_MANIFEST
+        echo "✅ Team Custom Ressource Definition created"
+
+        echo "⚙️ Creating Operator Configuration"
+        envsubst < $POSTGRESQL_CRD_MANIFEST | kubectl apply -f -
+        echo "✅ Custom Ressource Definition created"
+
+        echo "⚙️ Deploying Operator"
+        envsubst < $POSTGRESQL_DEPLOYMENT_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
+        echo "✅ Operator deployed"
+
+        echo "⚙️ Creating Operator Service"
+        envsubst < $POSTGRESQL_SERVICE_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
+        echo "✅ Service created"
 
         #unset $POSTGRESQL_NAMESPACE
         unset $POSTGRESQL_NAMESPACE
