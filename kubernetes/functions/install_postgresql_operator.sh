@@ -2,9 +2,9 @@
 set -e
 
 #Enable this and the function calls at the bottom, to test this script isolated
-#CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
-#source "$CONFIG_FILE"
-#echo "✅ Loaded configuration from $CONFIG_FILE"
+CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
+source "$CONFIG_FILE"
+echo "✅ Loaded configuration from $CONFIG_FILE"
 
 check_parameters(){
 
@@ -80,7 +80,7 @@ check_manifests(){
     else
         echo "✅ YAML file $POSTGRESQL_SERVICE_MANIFEST loaded!"
     fi
-    
+
 }
 
 install_postgresql_operator(){
@@ -104,19 +104,19 @@ install_postgresql_operator(){
         echo "✅ Cluster Role, Service Account & Cluster Role Binding created"
 
         echo "⚙️ Creating Custom Ressource Definition"
-        kubectl apply -f $POSTGRESQL_PSQL_CRD_MANIFEST
+        kubectl apply -f $POSTGRESQL_OPERATOR_CRD_MANIFEST
         echo "✅ Custom Ressource Definition created"
 
         echo "⚙️ Team Creating Custom Ressource Definition"
-        kubectl apply -f $POSTGRESQL_PSQL_TEAM_CRD_MANIFEST
+        kubectl apply -f $POSTGRESQL_POSTGRESQLS_CRD_MANIFEST
         echo "✅ Team Custom Ressource Definition created"
 
-        echo "⚙️ Creating Operator Configuration"
-        envsubst < $POSTGRESQL_CRD_MANIFEST | kubectl apply -f -
-        echo "✅ Custom Ressource Definition created"
+        echo "⚙️ Team Creating Custom Ressource Definition"
+        kubectl apply -f $POSTGRESQL_POSTGRESQLTEAM_CRD_MANIFEST
+        echo "✅ Team Custom Ressource Definition created"
 
         echo "⚙️ Deploying Operator"
-        envsubst < $POSTGRESQL_DEPLOYMENT_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
+        envsubst < $POSTGRESQL_OPERATORCONFIGURATION_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Operator deployed"
 
         echo "⚙️ Creating Operator Service"
@@ -137,6 +137,6 @@ install_postgresql_operator(){
 }
 
 #Function Calls for isolation test
-#check_parameters
-#check_manifests
-#install_postgresql_operator
+check_parameters
+check_manifests
+install_postgresql_operator

@@ -103,5 +103,5 @@ fi
 
 # --- Installation of PostgreSQL Operator --- 
 
-source ./functions/install_postgresql_operator.sh
-install_postgresql_operator
+#source ./functions/install_postgresql_operator.sh
+#install_postgresql_operator
