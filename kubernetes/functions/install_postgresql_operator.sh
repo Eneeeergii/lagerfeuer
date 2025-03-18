@@ -2,7 +2,7 @@
 set -e
 
 #Enable this and the function calls at the bottom, to test this script isolated
-CONFIG_FILE=/home/azad/lagerfeuer/kubernetes/config.env
+CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
 source "$CONFIG_FILE"
 echo "✅ Loaded configuration from $CONFIG_FILE"
 
