@@ -4,7 +4,7 @@ metadata:
   name: postgresql-operator-configuration
   namespace: "${POSTGRESQL_NAMESPACE}"
 configuration:
-  docker_image: ghcr.io/zalando/spilo-17:4.0-p2
+  docker_image: ghcr.io/zalando/"${POSTGRESQL_SPILO_VERSION}"
   # enable_crd_registration: true
   # crd_categories:
   # - all
