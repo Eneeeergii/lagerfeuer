@@ -1,10 +1,10 @@
 apiVersion: "acid.zalan.do/v1"
 kind: OperatorConfiguration
 metadata:
-  name: postgres-operator-default-configuration
-  namespace: ${POSTGRESQL_NAMESPACE}
+  name: postgresql-operator
+  namespace: "${POSTGRESQL_NAMESPACE}"
 configuration:
-  docker_image: ghcr.io/zalando/${POSTGRESQL_SPILO_VERSION}
+  docker_image: ghcr.io/zalando/"${POSTGRESQL_SPILO_VERSION}"
   # enable_crd_registration: true
   # crd_categories:
   # - all
@@ -90,7 +90,7 @@ configuration:
     oauth_token_secret_name: postgresql-operator
     pdb_master_label_selector: true
     pdb_name_format: "postgres-{cluster}-pdb"
-    persistent_volume_claim_retention_policy: 
+    persistent_volume_claim_retention_policy:
       when_deleted: "retain"
       when_scaled: "retain"
     pod_antiaffinity_preferred_during_scheduling: false
