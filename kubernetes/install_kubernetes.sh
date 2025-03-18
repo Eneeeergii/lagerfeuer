@@ -6,7 +6,6 @@ set -o pipefail  # Catch pipeline errors
 # Functions
 source ./functions/check_config_env.sh
 source ./functions/check_files.sh
-source ./functions/install_postgresql_operator.sh
 
 # Files
 CONFIG_FILE="./config.env"
@@ -104,4 +103,5 @@ fi
 
 # --- Installation of PostgreSQL Operator --- 
 
-#install_postgresql_operator
+source ./functions/install_postgresql_operator.sh
+install_postgresql_operator
