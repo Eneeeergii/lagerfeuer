@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 
 #Enable this and the function calls at the bottom, to test this script isolated
