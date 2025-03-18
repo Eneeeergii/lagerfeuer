@@ -104,4 +104,4 @@ fi
 
 # --- Installation of PostgreSQL Operator --- 
 
-install_postgresql_operator
+#install_postgresql_operator
