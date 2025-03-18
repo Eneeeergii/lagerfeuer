@@ -73,32 +73,32 @@ install_postgresql_operator(){
     #Check if Operator should be installed
     if [ "$POSTGRESQL_OPERATOR_INSTALL" == "true" ]; then
 
-        export POSTGRESQL_NAMESPACE=$(echo $POSTGRESQL_NAMESPACE | sed 's/["\\]//g')
-        export POSTGRESQL_SPILO_VERSION=$(echo $POSTGRESQL_SPILO_VERSION | sed 's/["\\]//g')
-        export POSTGRESQL_OPERATOR_VERSION=$(echo $POSTGRESQL_OPERATOR_VERSION | sed 's/["\\]//g')
+        export POSTGRESQL_NAMESPACE
+        export POSTGRESQL_SPILO_VERSION
+        export POSTGRESQL_OPERATOR_VERSION
 
         echo $POSTGRESQL_NAMESPACE
         echo $POSTGRESQL_SPILO_VERSION
         echo $POSTGRESQL_OPERATOR_VERSION
         
         echo "⚙️ Creating Namespace"
-        envsubst < $POSTGRESQL_NAMESPACE_MANIFEST | kubectl apply -f -
+        envsubst < $POSTGRESQL_NAMESPACE_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Namespace created"
 
         echo "⚙️ Creating Cluster Role, Service Account & Cluster Role Binding"
-        envsubst < $POSTGRESQL_RBAC_MANIFEST | kubectl apply -f -
+        envsubst < $POSTGRESQL_RBAC_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Cluster Role, Service Account & Cluster Role Binding created"
 
         echo "⚙️ Creating Custom Ressource definition for Operator Configuration"
-        envsubst < $POSTGRESQL_CRD_MANIFEST | kubectl apply -f -
+        envsubst < $POSTGRESQL_CRD_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Custom Ressource Definition created"
 
         echo "⚙️ Deploying Operator"
-        envsubst < $POSTGRESQL_DEPLOYMENT_MANIFEST | kubectl apply -f -
+        envsubst < $POSTGRESQL_DEPLOYMENT_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Operator deployed"
 
         echo "⚙️ Creating Operator Service"
-        envsubst < $POSTGRESQL_SERVICE_MANIFEST | kubectl apply -f -
+        envsubst < $POSTGRESQL_SERVICE_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Service created"
 
         #unset $POSTGRESQL_NAMESPACE
