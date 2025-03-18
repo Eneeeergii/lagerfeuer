@@ -34,7 +34,6 @@ check_manifests(){
     if [ ! -f "$POSTGRESQL_NAMESPACE_MANIFEST" ]; then
         echo "❌ YAML file '$POSTGRESQL_NAMESPACE_MANIFEST' not found!"
         exit 1
-    fi
     else
         echo "✅ YAML file '$POSTGRESQL_NAMESPACE_MANIFEST' loaded!"
     fi
@@ -42,7 +41,6 @@ check_manifests(){
     if [ ! -f "$POSTGRESQL_RBAC_MANIFEST" ]; then
         echo "❌ YAML file '$POSTGRESQL_RBAC_MANIFEST' not found!"
         exit 1
-    fi
     else
         echo "✅ YAML file '$POSTGRESQL_RBAC_MANIFEST' loaded!"
     fi
@@ -50,7 +48,6 @@ check_manifests(){
     if [ ! -f "$POSTGRESQL_CRD_MANIFEST" ]; then
         echo "❌ YAML file '$POSTGRESQL_CRD_MANIFEST' not found!"
         exit 1
-    fi
     else
         echo "✅ YAML file '$POSTGRESQL_CRD_MANIFEST' loaded!"
     fi
@@ -58,7 +55,6 @@ check_manifests(){
     if [ ! -f "$POSTGRESQL_DEPLOYMENT_MANIFEST" ]; then
         echo "❌ YAML file '$POSTGRESQL_DEPLOYMENT_MANIFEST' not found!"
         exit 1
-    fi
     else
         echo "✅ YAML file '$POSTGRESQL_DEPLOYMENT_MANIFEST' loaded!"
     fi
@@ -66,7 +62,6 @@ check_manifests(){
     if [ ! -f "$POSTGRESQL_SERVICE_MANIFEST" ]; then
         echo "❌ YAML file '$POSTGRESQL_SERVICE_MANIFEST' not found!"
         exit 1
-    fi
     else
         echo "✅ YAML file '$POSTGRESQL_SERVICE_MANIFEST' loaded!"
     fi
