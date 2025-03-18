@@ -90,7 +90,7 @@ install_postgresql_operator(){
         echo "✅ Cluster Role, Service Account & Cluster Role Binding created"
 
         echo "⚙️ Creating Custom Ressource definition for Operator Configuration"
-        envsubst < $POSTGRESQL_CRD_MANIFEST > debug_crd.yaml | sed 's/["\\]//g' | kubectl apply -f -
+        envsubst < $POSTGRESQL_CRD_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Custom Ressource Definition created"
 
         echo "⚙️ Deploying Operator"
