@@ -46,6 +46,13 @@ check_manifests(){
         echo "✅ YAML file $POSTGRESQL_RBAC_MANIFEST loaded!"
     fi
 
+    if [ ! -f "$POSTGRESQL_PSQL_CRD_MANIFEST" ]; then
+        echo "❌ YAML file $POSTGRESQL_PSQL_CRD_MANIFEST not found!"
+        exit 1
+    else
+        echo "✅ YAML file $POSTGRESQL_PSQL_CRD_MANIFEST loaded!"
+    fi
+
     if [ ! -f "$POSTGRESQL_CRD_MANIFEST" ]; then
         echo "❌ YAML file $POSTGRESQL_CRD_MANIFEST not found!"
         exit 1
@@ -89,7 +96,11 @@ install_postgresql_operator(){
         envsubst < $POSTGRESQL_RBAC_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Cluster Role, Service Account & Cluster Role Binding created"
 
-        echo "⚙️ Creating Custom Ressource definition for Operator Configuration"
+        echo "⚙️ Creating Custom Ressource Definition"
+        kubectl apply -f $POSTGRESQL_PSQL_CRD_MANIFEST
+        echo "✅ Custom Ressource Definition created"
+
+        echo "⚙️ Creating Operator Configuration"
         envsubst < $POSTGRESQL_CRD_MANIFEST | kubectl apply -f -
         echo "✅ Custom Ressource Definition created"
 
