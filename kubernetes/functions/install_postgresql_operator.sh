@@ -100,6 +100,8 @@ install_postgresql_operator(){
         envsubst < "$POSTGRESQL_SERVICE_MANIFEST" | kubectl apply -f -
         echo "✅ Service created"
 
+        #unset $POSTGRESQL_NAMESPACE
+
     elif [ "$POSTGRESQL_OPERATOR_INSTALL" == "false" ]; then
 
         echo "⚙️ Skipping installation of PostgreSQL Operator"
