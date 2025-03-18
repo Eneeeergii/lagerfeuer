@@ -2,9 +2,9 @@
 set -e
 
 #Enable this and the function calls at the bottom, to test this script isolated
-CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
-source "$CONFIG_FILE"
-echo "✅ Loaded configuration from $CONFIG_FILE"
+#CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
+#source "$CONFIG_FILE"
+#echo "✅ Loaded configuration from $CONFIG_FILE"
 
 check_parameters(){
 
@@ -51,6 +51,13 @@ check_manifests(){
         exit 1
     else
         echo "✅ YAML file $POSTGRESQL_PSQL_CRD_MANIFEST loaded!"
+    fi
+
+    if [ ! -f "$POSTGRESQL_PSQL_TEAM_CRD_MANIFEST" ]; then
+        echo "❌ YAML file $POSTGRESQL_PSQL_TEAM_CRD_MANIFEST not found!"
+        exit 1
+    else
+        echo "✅ YAML file $POSTGRESQL_PSQL_TEAM_CRD_MANIFEST loaded!"
     fi
 
     if [ ! -f "$POSTGRESQL_CRD_MANIFEST" ]; then
@@ -100,6 +107,10 @@ install_postgresql_operator(){
         kubectl apply -f $POSTGRESQL_PSQL_CRD_MANIFEST
         echo "✅ Custom Ressource Definition created"
 
+        echo "⚙️ Team Creating Custom Ressource Definition"
+        kubectl apply -f $POSTGRESQL_PSQL_CRD_MANIFEST
+        echo "✅ Team Custom Ressource Definition created"
+
         echo "⚙️ Creating Operator Configuration"
         envsubst < $POSTGRESQL_CRD_MANIFEST | kubectl apply -f -
         echo "✅ Custom Ressource Definition created"
@@ -126,6 +137,6 @@ install_postgresql_operator(){
 }
 
 #Function Calls for isolation test
-check_parameters
-check_manifests
-install_postgresql_operator
+#check_parameters
+#check_manifests
+#install_postgresql_operator
