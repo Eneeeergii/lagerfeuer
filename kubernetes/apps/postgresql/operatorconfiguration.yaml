@@ -2,9 +2,9 @@ apiVersion: "acid.zalan.do/v1"
 kind: OperatorConfiguration
 metadata:
   name: postgres-operator
-  namespace: ${POSTGRESQL_NAMESPACE}
+  namespace: "${POSTGRESQL_NAMESPACE}"
 configuration:
-  docker_image: ghcr.io/zalando/${POSTGRESQL_SPILO_VERSION}
+  docker_image: ghcr.io/zalando/spilo-17:4.0-p2
   # enable_crd_registration: true
   # crd_categories:
   # - all
