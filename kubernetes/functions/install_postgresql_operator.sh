@@ -82,11 +82,11 @@ install_postgresql_operator(){
         echo $POSTGRESQL_OPERATOR_VERSION
         
         echo "⚙️ Creating Namespace"
-        envsubst < $POSTGRESQL_NAMESPACE_MANIFEST > debug_ns.yaml | sed 's/["\\]//g' | kubectl apply -f - 
+        envsubst < $POSTGRESQL_NAMESPACE_MANIFEST | sed 's/["\\]//g' | kubectl apply -f - 
         echo "✅ Namespace created"
 
         echo "⚙️ Creating Cluster Role, Service Account & Cluster Role Binding"
-        envsubst < $POSTGRESQL_RBAC_MANIFEST > debug_rbac.yaml | sed 's/["\\]//g' | kubectl apply -f -
+        envsubst < $POSTGRESQL_RBAC_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Cluster Role, Service Account & Cluster Role Binding created"
 
         echo "⚙️ Creating Custom Ressource definition for Operator Configuration"
