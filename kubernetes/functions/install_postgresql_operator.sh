@@ -73,9 +73,9 @@ install_postgresql_operator(){
     #Check if Operator should be installed
     if [ "$POSTGRESQL_OPERATOR_INSTALL" == "true" ]; then
 
-        export POSTGRESQL_NAMESPACE
-        export POSTGRESQL_SPILO_VERSION
-        export POSTGRESQL_OPERATOR_VERSION
+        export POSTGRESQL_NAMESPACE=$(echo $POSTGRESQL_NAMESPACE | sed 's/["\\]//g')
+        export POSTGRESQL_SPILO_VERSION=$(echo $POSTGRESQL_SPILO_VERSION | sed 's/["\\]//g')
+        export POSTGRESQL_OPERATOR_VERSION=$(echo $POSTGRESQL_OPERATOR_VERSION | sed 's/["\\]//g')
 
         echo $POSTGRESQL_NAMESPACE
         echo $POSTGRESQL_SPILO_VERSION
