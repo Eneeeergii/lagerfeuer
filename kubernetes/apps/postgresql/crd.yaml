@@ -1,7 +1,7 @@
 apiVersion: "acid.zalan.do/v1"
 kind: OperatorConfiguration
 metadata:
-  name: postgresql-operator-default-configuration
+  name: postgresql-operator
   namespace: "${POSTGRESQL_NAMESPACE}"
 configuration:
   docker_image: ghcr.io/zalando/"${POSTGRESQL_SPILO_VERSION}"
