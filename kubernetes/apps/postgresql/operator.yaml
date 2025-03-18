@@ -5,7 +5,7 @@ metadata:
     app.kubernetes.io/instance: postgres-operator
     app.kubernetes.io/name: postgres-operator
   name: postgres-operator
-  namespace: "${POSTGRESQL_NAMESPACE}"
+  namespace: ${POSTGRESQL_NAMESPACE}
 spec:
   progressDeadlineSeconds: 600
   replicas: 1

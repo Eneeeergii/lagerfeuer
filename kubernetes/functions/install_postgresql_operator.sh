@@ -32,38 +32,38 @@ check_parameters(){
 check_manifests(){
 
     if [ ! -f "$POSTGRESQL_NAMESPACE_MANIFEST" ]; then
-        echo "❌ YAML file '$POSTGRESQL_NAMESPACE_MANIFEST' not found!"
+        echo "❌ YAML file $POSTGRESQL_NAMESPACE_MANIFEST not found!"
         exit 1
     else
-        echo "✅ YAML file '$POSTGRESQL_NAMESPACE_MANIFEST' loaded!"
+        echo "✅ YAML file $POSTGRESQL_NAMESPACE_MANIFEST loaded!"
     fi
 
     if [ ! -f "$POSTGRESQL_RBAC_MANIFEST" ]; then
-        echo "❌ YAML file '$POSTGRESQL_RBAC_MANIFEST' not found!"
+        echo "❌ YAML file $POSTGRESQL_RBAC_MANIFEST not found!"
         exit 1
     else
-        echo "✅ YAML file '$POSTGRESQL_RBAC_MANIFEST' loaded!"
+        echo "✅ YAML file $POSTGRESQL_RBAC_MANIFEST loaded!"
     fi
 
     if [ ! -f "$POSTGRESQL_CRD_MANIFEST" ]; then
-        echo "❌ YAML file '$POSTGRESQL_CRD_MANIFEST' not found!"
+        echo "❌ YAML file $POSTGRESQL_CRD_MANIFEST not found!"
         exit 1
     else
-        echo "✅ YAML file '$POSTGRESQL_CRD_MANIFEST' loaded!"
+        echo "✅ YAML file $POSTGRESQL_CRD_MANIFEST loaded!"
     fi
 
     if [ ! -f "$POSTGRESQL_DEPLOYMENT_MANIFEST" ]; then
-        echo "❌ YAML file '$POSTGRESQL_DEPLOYMENT_MANIFEST' not found!"
+        echo "❌ YAML file $POSTGRESQL_DEPLOYMENT_MANIFEST not found!"
         exit 1
     else
-        echo "✅ YAML file '$POSTGRESQL_DEPLOYMENT_MANIFEST' loaded!"
+        echo "✅ YAML file $POSTGRESQL_DEPLOYMENT_MANIFEST loaded!"
     fi
 
     if [ ! -f "$POSTGRESQL_SERVICE_MANIFEST" ]; then
-        echo "❌ YAML file '$POSTGRESQL_SERVICE_MANIFEST' not found!"
+        echo "❌ YAML file $POSTGRESQL_SERVICE_MANIFEST not found!"
         exit 1
     else
-        echo "✅ YAML file '$POSTGRESQL_SERVICE_MANIFEST' loaded!"
+        echo "✅ YAML file $POSTGRESQL_SERVICE_MANIFEST loaded!"
     fi
 }
 
@@ -81,23 +81,23 @@ install_postgresql_operator(){
         echo $POSTGRESQL_OPERATOR_VERSION
         
         echo "⚙️ Creating Namespace"
-        envsubst < "$POSTGRESQL_NAMESPACE_MANIFEST" | kubectl apply -f -
+        envsubst < $POSTGRESQL_NAMESPACE_MANIFEST | kubectl apply -f -
         echo "✅ Namespace created"
 
         echo "⚙️ Creating Cluster Role, Service Account & Cluster Role Binding"
-        envsubst < "$POSTGRESQL_RBAC_MANIFEST" | kubectl apply -f -
+        envsubst < $POSTGRESQL_RBAC_MANIFEST | kubectl apply -f -
         echo "✅ Cluster Role, Service Account & Cluster Role Binding created"
 
         echo "⚙️ Creating Custom Ressource definition for Operator Configuration"
-        envsubst < "$POSTGRESQL_CRD_MANIFEST" | kubectl apply -f -
+        envsubst < $POSTGRESQL_CRD_MANIFEST | kubectl apply -f -
         echo "✅ Custom Ressource Definition created"
 
         echo "⚙️ Deploying Operator"
-        envsubst < "$POSTGRESQL_DEPLOYMENT_MANIFEST" | kubectl apply -f -
+        envsubst < $POSTGRESQL_DEPLOYMENT_MANIFEST | kubectl apply -f -
         echo "✅ Operator deployed"
 
         echo "⚙️ Creating Operator Service"
-        envsubst < "$POSTGRESQL_SERVICE_MANIFEST" | kubectl apply -f -
+        envsubst < $POSTGRESQL_SERVICE_MANIFEST | kubectl apply -f -
         echo "✅ Service created"
 
         #unset $POSTGRESQL_NAMESPACE
