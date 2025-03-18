@@ -2,9 +2,9 @@
 set -e
 
 #Enable this and the function calls at the bottom, to test this script isolated
-#CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
-#source "$CONFIG_FILE"
-#echo "✅ Loaded configuration from $CONFIG_FILE"
+CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
+source "$CONFIG_FILE"
+echo "✅ Loaded configuration from $CONFIG_FILE"
 
 check_parameters(){
 
@@ -137,6 +137,6 @@ install_postgresql_operator(){
 }
 
 #Function Calls for isolation test
-#check_parameters
-#check_manifests
-#install_postgresql_operator
+check_parameters
+check_manifests
+install_postgresql_operator
