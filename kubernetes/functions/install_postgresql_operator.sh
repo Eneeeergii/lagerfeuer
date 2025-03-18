@@ -10,15 +10,15 @@ check_parameters(){
     if [ "$POSTGRESQL_OPERATOR_INSTALL" == "true" ]; then
         
         if [ -z "$POSTGRESQL_NAMESPACE" ]; then
-            echo "❌ K3S_VERSION is not set!"
+            echo "❌ NAMESPACE is not set!"
             exit 1
         fi
         if [ -z "$POSTGRESQL_SPILO_VERSION" ]; then
-            echo "❌ K3S_VERSION is not set!"
+            echo "❌ SPILO Version is not set!"
             exit 1
         fi
         if [ -z "$POSTGRESQL_OPERATOR_VERSION" ]; then
-            echo "❌ K3S_VERSION is not set!"
+            echo "❌ OPERATOR Version is not set!"
             exit 1
         fi
     elif [ "$POSTGRESQL_OPERATOR_INSTALL" == "false" ]; then
@@ -71,6 +71,14 @@ install_postgresql_operator(){
 
     #Check if Operator should be installed
     if [ "$POSTGRESQL_OPERATOR_INSTALL" == "true" ]; then
+
+        export POSTGRESQL_NAMESPACE
+        export POSTGRESQL_SPILO_VERSION
+        export POSTGRESQL_OPERATOR_VERSION
+
+        echo $POSTGRESQL_NAMESPACE
+        echo $POSTGRESQL_SPILO_VERSION
+        echo $POSTGRESQL_OPERATOR_VERSION
         
         echo "⚙️ Creating Namespace"
         envsubst < "$POSTGRESQL_NAMESPACE_MANIFEST" | kubectl apply -f -
