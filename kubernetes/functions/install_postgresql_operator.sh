@@ -82,23 +82,23 @@ install_postgresql_operator(){
         echo $POSTGRESQL_OPERATOR_VERSION
         
         echo "⚙️ Creating Namespace"
-        envsubst < $POSTGRESQL_NAMESPACE_MANIFEST | sed 's/["\\]//g' | kubectl apply -f - 
+        envsubst < $POSTGRESQL_NAMESPACE_MANIFEST > debug_ns.yaml | sed 's/["\\]//g' | kubectl apply -f - 
         echo "✅ Namespace created"
 
         echo "⚙️ Creating Cluster Role, Service Account & Cluster Role Binding"
-        envsubst < $POSTGRESQL_RBAC_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
+        envsubst < $POSTGRESQL_RBAC_MANIFEST > debug_rbac.yaml | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Cluster Role, Service Account & Cluster Role Binding created"
 
         echo "⚙️ Creating Custom Ressource definition for Operator Configuration"
-        envsubst < $POSTGRESQL_CRD_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
+        envsubst < $POSTGRESQL_CRD_MANIFEST > debug_crd.yaml | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Custom Ressource Definition created"
 
         echo "⚙️ Deploying Operator"
-        envsubst < $POSTGRESQL_DEPLOYMENT_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
+        envsubst < $POSTGRESQL_DEPLOYMENT_MANIFEST > debug_deployment.yaml | sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Operator deployed"
 
         echo "⚙️ Creating Operator Service"
-        envsubst < $POSTGRESQL_SERVICE_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
+        envsubst < $POSTGRESQL_SERVICE_MANIFEST > debug_service.yaml| sed 's/["\\]//g' | kubectl apply -f -
         echo "✅ Service created"
 
         #unset $POSTGRESQL_NAMESPACE
