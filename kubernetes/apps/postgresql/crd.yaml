@@ -4,7 +4,7 @@ metadata:
   name: postgresql-operator-configuration
   namespace: "${POSTGRESQL_NAMESPACE}"
 configuration:
-  docker_image: ghcr.io/zalando/${POSTGRESQL_SPILO_VERSION}
+  docker_image: ghcr.io/zalando/"${POSTGRESQL_SPILO_VERSION}"
   # enable_crd_registration: true
   # crd_categories:
   # - all
@@ -222,4 +222,3 @@ configuration:
     # connection_pooler_user: "pooler"
   patroni:
     enable_patroni_failsafe_mode: false
-
