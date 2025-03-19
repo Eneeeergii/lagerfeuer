@@ -21,6 +21,9 @@ install_kubeVIP_cloud_provider_on_prem(){
 
     if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
 
+        export VIP_LB_RANGE
+        echo $VIP_LB_RANGE
+
         envsubst < "$KUBE_VIP_LB_YAML" | kubectl apply -f -
         envsubst < "$KUBE_VIP_CLOUD_PROVIDER_CONFIGMAP_YAML" | kubectl apply -f -
         envsubst < "$KUBE_VIP_CLOUD_PROVIDER_YAML" | kubectl apply -f -
