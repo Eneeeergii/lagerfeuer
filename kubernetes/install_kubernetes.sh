@@ -12,15 +12,39 @@ source ./functions/check_files.sh
 
 export KUBE_VIP_API_YAML
 export KUBE_VIP_LB_YAML
+export INSTALL_K3S_EXEC="$INSTALL_K3S_FIRSTNODE"
+export INSTALL_K3S_VERSION="$K3S_VERSION"
+export K3S_TOKEN
+export K3S_API_IP
+export VIP_INTERFACE
+export VIP_LB_RANGE
+export DEPLOY_LB_KUBEVIP
+export KUBECONFIG
+export SSH_USER
+export SSH_KEY
+export POSTGRESQL_OPERATOR_INSTALL
+export POSTGRESQL_NAMESPACE
+
+echo $KUBE_VIP_API_YAML
+echo $KUBE_VIP_LB_YAML
+echo $INSTALL_K3S_EXEC="$INSTALL_K3S_FIRSTNODE"
+echo $INSTALL_K3S_VERSION="$K3S_VERSION"
+echo $K3S_TOKEN
+echo $K3S_API_IP
+echo $VIP_INTERFACE
+echo $VIP_LB_RANGE
+echo $DEPLOY_LB_KUBEVIP
+echo $KUBECONFIG
+echo $SH_USER
+echo $SSH_KEY
+echo $POSTGRESQL_OPERATOR_INSTALL
+echo $POSTGRESQL_NAMESPACE
 
 # Check Deployments & Config Env
 check_deployment $KUBE_VIP_API_YAML $KUBE_VIP_LB_YAML
 check_config_env $CONFIG_FILE
 
 # --- Install K3s on First Node ---
-export INSTALL_K3S_EXEC="$INSTALL_K3S_FIRSTNODE"
-export INSTALL_K3S_VERSION="$K3S_VERSION"
-export K3S_TOKEN
 
 echo "🚀 Installing K3s version $K3S_VERSION with options: $INSTALL_K3S_EXEC"
 curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s -
@@ -28,8 +52,6 @@ curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s -
 echo "✅ K3s installed successfully!"
 
 # --- Deploy kube-vip for Kubernetes API VIP ---
-export K3S_API_IP
-export VIP_INTERFACE
 
 
 echo "🚀 Deploying kube-vip for Kubernetes API at $K3S_API_IP on interface $VIP_INTERFACE"
@@ -37,8 +59,7 @@ envsubst < "$KUBE_VIP_API_YAML" | kubectl apply -f -
 echo "✅ kube-vip for Kubernetes API deployed!"
 
 # --- Optionally Deploy kube-vip for LoadBalancer Services ---
-export VIP_LB_RANGE
-export DEPLOY_LB_KUBEVIP
+
 
 if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
     echo "🚀 Deploying kube-vip for LoadBalancer Services with range $VIP_LB_RANGE on interface $VIP_INTERFACE"
@@ -51,7 +72,7 @@ else
 fi
 
 # --- Add API IP in Kubeconfig ---
-export KUBECONFIG
+
 
 check_kubeconfig $KUBECONFIG
 
@@ -63,9 +84,7 @@ echo "✅ K3s kubeconfig updated to use ${K3S_API_IP}"
 
 if [ "$HA_CLUSTER" == "true" ]; then
     IFS=',' read -r -a MASTER_NODES <<< "$MASTERS"
-    export SSH_USER
-    export SSH_KEY
-
+    
     for master in "${MASTER_NODES[@]}"; do
         echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
         ssh -i "$SSH_KEY" "$SSH_USER@$master" << EOF
@@ -84,8 +103,6 @@ fi
 
 if [ "$ADDITIONAL_WORKERS" == "true" ]; then
     IFS=',' read -r -a WORKER_NODES <<< "$WORKERS"
-    export SSH_USER
-    export SSH_KEY
 
     for worker in "${WORKER_NODES[@]}"; do
         echo "🚀 Installing K3s version $K3S_VERSION on $worker and adding it to the K3s Cluster"
@@ -101,12 +118,7 @@ else
     exit 1
 fi
 
-# --- Remove k3s-install user ---
-
 # --- Installation of PostgreSQL Operator --- 
-
-export POSTGRESQL_OPERATOR_INSTALL
-export POSTGRESQL_NAMESPACE
 
 source ./functions/install_postgresql_operator.sh
 install_postgresql_operator $POSTGRESQL_OPERATOR_INSTALL $POSTGRESQL_NAMESPACE $KUBECONFIG
