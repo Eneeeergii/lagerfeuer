@@ -14,15 +14,10 @@ check_helm_command_exists(){
 
 check_parameters(){
 
-    if [ "$POSTGRESQL_OPERATOR_INSTALL" == "true" ]; then
-        
         if [ -z "$POSTGRESQL_NAMESPACE" ]; then
             echo "❌ NAMESPACE is not set!"
             exit 1
         fi
-    else
-        echo "❌ Value of POSTGRESQL_OPERATOR_INSTALL: $POSTGRESQL_OPERATOR_INSTALL is not allowed!"
-    fi
 
 }
 
@@ -82,6 +77,8 @@ install_postgresql_operator(){
 
         echo "⚙️ Skipping installation of PostgreSQL Operator"
 
+    else
+        echo "❌ Value of POSTGRESQL_OPERATOR_INSTALL: $POSTGRESQL_OPERATOR_INSTALL is not allowed!"
     fi
 
 }
