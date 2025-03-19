@@ -18,6 +18,7 @@ echo "✅ Loaded configuration from $CONFIG_FILE"
 source ./functions/check_config_env.sh
 source ./functions/check_files.sh
 source ./functions/install_postgresql_operator.sh
+source ./functions/install_kubeVIP_lb.sh
 
 # Variables
 export KUBE_VIP_API_YAML
@@ -58,31 +59,19 @@ check_deployment $KUBE_VIP_API_YAML $KUBE_VIP_LB_YAML
 
 echo "🚀 Installing K3s version $K3S_VERSION with options: $INSTALL_K3S_EXEC"
 curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s -
-
 echo "✅ K3s installed successfully!"
 
 # --- Deploy kube-vip for Kubernetes API VIP ---
-
 
 echo "🚀 Deploying kube-vip for Kubernetes API at $K3S_API_IP on interface $VIP_INTERFACE"
 envsubst < "$KUBE_VIP_API_YAML" | kubectl apply -f -
 echo "✅ kube-vip for Kubernetes API deployed!"
 
-# --- Optionally Deploy kube-vip for LoadBalancer Services ---
+# --- Deploy KubeVIP & KubeVIP Cloud Provider for Load Balancing ---
 
-
-if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
-    echo "🚀 Deploying kube-vip for LoadBalancer Services with range $VIP_LB_RANGE on interface $VIP_INTERFACE"
-    envsubst < "$KUBE_VIP_LB_YAML" | kubectl apply -f -
-    echo "✅ kube-vip for LoadBalancer Services deployed!"
-    echo "🎉 All done! Kubernetes API and optional LoadBalancer kube-vip are ready!"
-else
-    echo "⚙️ Skipping kube-vip LoadBalancer deployment as per config."
-    echo "🎉 All done! Kubernetes API kube-vip are ready!"
-fi
+install_kubeVIP_cloud_provider_on_prem $VIP_LB_RANGE
 
 # --- Add API IP in Kubeconfig ---
-
 
 check_kubeconfig $KUBECONFIG
 
@@ -130,7 +119,6 @@ fi
 
 # --- Installation of PostgreSQL Operator --- 
 install_postgresql_operator $POSTGRESQL_OPERATOR_INSTALL $POSTGRESQL_NAMESPACE $KUBECONFIG
-
 
 # --- Unset all Variables --- 
 unset $POSTGRESQL_OPERATOR_INSTALL
