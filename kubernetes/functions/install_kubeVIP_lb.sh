@@ -27,10 +27,10 @@ install_kubeVIP_cloud_provider_on_prem(){
           
     elif [ "$DEPLOY_LB_KUBEVIP" == "false" ]; then
 
-        echo "⚙️"
+        echo "⚙️ Skipping installation of kubeVIP LoadBalancer!"
 
     else
-
+        echo "❌ Value of POSTGRESQL_OPERATOR_INSTALL: $DEPLOY_LB_KUBEVIP is not allowed!"
     fi
 
 }
