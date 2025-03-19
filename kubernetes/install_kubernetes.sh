@@ -103,5 +103,9 @@ fi
 
 # --- Installation of PostgreSQL Operator --- 
 
-#source ./functions/install_postgresql_operator.sh
-#install_postgresql_operator
+export POSTGRESQL_OPERATOR_INSTALL
+export POSTGRESQL_NAMESPACE
+export KUBECONFIG
+
+source ./functions/install_postgresql_operator.sh
+install_postgresql_operator $POSTGRESQL_OPERATOR_INSTALL $POSTGRESQL_NAMESPACE $KUBECONFIG

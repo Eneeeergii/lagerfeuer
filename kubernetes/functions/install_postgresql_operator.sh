@@ -2,9 +2,15 @@
 set -e
 
 #Enable this and the function calls at the bottom, to test this script isolated
-CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
-source "$CONFIG_FILE"
-echo "✅ Loaded configuration from $CONFIG_FILE"
+#CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
+#source "$CONFIG_FILE"
+#echo "✅ Loaded configuration from $CONFIG_FILE"
+
+check_helm_command_exists(){
+
+    command -v "$1" >/dev/null 2>&1
+
+}
 
 check_parameters(){
 
@@ -14,120 +20,64 @@ check_parameters(){
             echo "❌ NAMESPACE is not set!"
             exit 1
         fi
-        if [ -z "$POSTGRESQL_SPILO_VERSION" ]; then
-            echo "❌ SPILO Version is not set!"
-            exit 1
-        fi
-        if [ -z "$POSTGRESQL_OPERATOR_VERSION" ]; then
-            echo "❌ OPERATOR Version is not set!"
-            exit 1
-        fi
-    elif [ "$POSTGRESQL_OPERATOR_INSTALL" == "false" ]; then
-        echo "⚙️ Skipping installation of PostgreSQL Operator"
     else
         echo "❌ Value of POSTGRESQL_OPERATOR_INSTALL: $POSTGRESQL_OPERATOR_INSTALL is not allowed!"
     fi
 
 }
 
-check_manifests(){
+install_helm(){
 
-    if [ ! -f "$POSTGRESQL_NAMESPACE_MANIFEST" ]; then
-        echo "❌ YAML file $POSTGRESQL_NAMESPACE_MANIFEST not found!"
-        exit 1
+    echo "\n🔍 Checking Helm installation..."
+
+    if ! check_helm_command_exists helm; then
+        echo "🚨 Helm is not installed. Installing..."
+        curl -s https://baltocdn.com/helm/signing.asc | apt-key add -
+        apt-get install -y apt-transport-https
+        echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list > /dev/null
+        apt-get update
+        apt-get install -y helm
+        echo "✅ Helm installed successfully!"
     else
-        echo "✅ YAML file $POSTGRESQL_NAMESPACE_MANIFEST loaded!"
+        echo "✅ Helm is already installed. Checking for Updates..."
+        apt-get update
+        apt-get install --only-upgrade helm && echo "✅ Helm upgraded successfully!" || echo "⚠️ No Updates for Helm available."
     fi
 
-    if [ ! -f "$POSTGRESQL_RBAC_MANIFEST" ]; then
-        echo "❌ YAML file $POSTGRESQL_RBAC_MANIFEST not found!"
-        exit 1
+    echo "\n🔍 Checking Helm-Repositories..."
+
+    if helm repo list | grep -q "https"; then
+        echo "🔄 Found Helm-Repositories. Running Update..."
+        helm repo update && echo "✅ Helm-Repositories successfully updated!" || echo "❌ Error during repository updates."
     else
-        echo "✅ YAML file $POSTGRESQL_RBAC_MANIFEST loaded!"
+        echo "ℹ️ No Helm-Repositories found. There is nothing to update."
     fi
 
-    if [ ! -f "$POSTGRESQL_OPERATOR_CRD_MANIFEST" ]; then
-        echo "❌ YAML file $POSTGRESQL_OPERATOR_CRD_MANIFEST not found!"
-        exit 1
-    else
-        echo "✅ YAML file $POSTGRESQL_OPERATOR_CRD_MANIFEST loaded!"
-    fi
-
-    if [ ! -f "$POSTGRESQL_POSTGRESQLS_CRD_MANIFEST" ]; then
-        echo "❌ YAML file $POSTGRESQL_POSTGRESQLS_CRD_MANIFEST not found!"
-        exit 1
-    else
-        echo "✅ YAML file $POSTGRESQL_POSTGRESQLS_CRD_MANIFEST loaded!"
-    fi
-
-    if [ ! -f "$POSTGRESQL_POSTGRESQLTEAM_CRD_MANIFEST" ]; then
-        echo "❌ YAML file $POSTGRESQL_POSTGRESQLTEAM_CRD_MANIFEST not found!"
-        exit 1
-    else
-        echo "✅ YAML file $POSTGRESQL_POSTGRESQLTEAM_CRD_MANIFEST loaded!"
-    fi
-
-    if [ ! -f "$POSTGRESQL_OPERATORCONFIGURATION_MANIFEST" ]; then
-        echo "❌ YAML file $POSTGRESQL_OPERATORCONFIGURATION_MANIFEST not found!"
-        exit 1
-    else
-        echo "✅ YAML file $POSTGRESQL_OPERATORCONFIGURATION_MANIFEST loaded!"
-    fi
-
-    if [ ! -f "$POSTGRESQL_SERVICE_MANIFEST" ]; then
-        echo "❌ YAML file $POSTGRESQL_SERVICE_MANIFEST not found!"
-        exit 1
-    else
-        echo "✅ YAML file $POSTGRESQL_SERVICE_MANIFEST loaded!"
-    fi
+    echo "\n🎉 Helm installation finished!"
 
 }
 
 install_postgresql_operator(){
 
-    check_parameters
-    check_manifests
-
-    #Check if Operator should be installed
+    operator_install=$1
+    namespace=$2
+    kubeconfig=$3
+    
     if [ "$POSTGRESQL_OPERATOR_INSTALL" == "true" ]; then
 
-        export POSTGRESQL_NAMESPACE
-        export POSTGRESQL_SPILO_VERSION
-        export POSTGRESQL_OPERATOR_VERSION
+        check_parameters
+        install_helm
+       
+        echo "\n🔄 Adding Zalando PostgreSQL Operator Helm repository..."
+        helm repo add zalando https://opensource.zalando.com/postgres-operator/charts/
+        helm repo update
+
+        echo "\n🚀 Installing Zalando PostgreSQL Operator..."
+        kubectl create namespace $namespace || echo "⚠️ Namespace already exists."
+        helm upgrade --install postgres-operator zalando/postgres-operator -n $namespace --kubeconfig=$kubeconfig
+
+        echo "\n🎉 Zalando PostgreSQL Operator has been successfully installed!"
         
-        echo "⚙️ Creating Namespace"
-        envsubst < $POSTGRESQL_NAMESPACE_MANIFEST | sed 's/["\\]//g' | kubectl apply -f - 
-        echo "✅ Namespace created"
-
-        echo "⚙️ Creating Cluster Role, Service Account & Cluster Role Binding"
-        envsubst < $POSTGRESQL_RBAC_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
-        echo "✅ Cluster Role, Service Account & Cluster Role Binding created"
-
-        echo "⚙️ Creating Custom Ressource Definition"
-        kubectl apply -f $POSTGRESQL_OPERATOR_CRD_MANIFEST
-        echo "✅ Custom Ressource Definition created"
-
-        echo "⚙️ Team Creating Custom Ressource Definition"
-        kubectl apply -f $POSTGRESQL_POSTGRESQLS_CRD_MANIFEST
-        echo "✅ Team Custom Ressource Definition created"
-
-        echo "⚙️ Team Creating Custom Ressource Definition"
-        kubectl apply -f $POSTGRESQL_POSTGRESQLTEAM_CRD_MANIFEST
-        echo "✅ Team Custom Ressource Definition created"
-
-        echo "⚙️ Deploying Operator"
-        envsubst < $POSTGRESQL_OPERATORCONFIGURATION_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
-        echo "✅ Operator deployed"
-
-        echo "⚙️ Creating Operator Service"
-        envsubst < $POSTGRESQL_SERVICE_MANIFEST | sed 's/["\\]//g' | kubectl apply -f -
-        echo "✅ Service created"
-
-        #unset $POSTGRESQL_NAMESPACE
-        unset $POSTGRESQL_NAMESPACE
-        unset $POSTGRESQL_SPILO_VERSION
-        unset $POSTGRESQL_OPERATOR_VERSION
-
     elif [ "$POSTGRESQL_OPERATOR_INSTALL" == "false" ]; then
 
         echo "⚙️ Skipping installation of PostgreSQL Operator"
@@ -137,6 +87,7 @@ install_postgresql_operator(){
 }
 
 #Function Calls for isolation test
-check_parameters
-check_manifests
-install_postgresql_operator
+#export POSTGRESQL_OPERATOR_INSTALL
+#export POSTGRESQL_NAMESPACE
+#export KUBECONFIG
+#install_postgresql_operator $POSTGRESQL_OPERATOR_INSTALL $POSTGRESQL_NAMESPACE $KUBECONFIG 
