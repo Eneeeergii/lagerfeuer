@@ -2,16 +2,6 @@ set -e  # Stop on error
 
 check_config_env(){
 
-    CONFIG_FILE=$1
-
-    if [ ! -f "$CONFIG_FILE" ]; then
-        echo "❌ Configuration file '$CONFIG_FILE' not found!"
-        exit 1
-    fi
-
-    source "$CONFIG_FILE"
-    echo "✅ Loaded configuration from $CONFIG_FILE"
-
     # --- Validate Required Variables ---
     if [ -z "$K3S_VERSION" ]; then
         echo "❌ K3S_VERSION is not set!"

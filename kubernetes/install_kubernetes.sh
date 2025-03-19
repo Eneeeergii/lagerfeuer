@@ -6,10 +6,20 @@ set -o pipefail  # Catch pipeline errors
 # Environment File
 CONFIG_FILE="./config.env"
 
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "❌ Configuration file '$CONFIG_FILE' not found!"
+    exit 1
+fi
+
+source "$CONFIG_FILE"
+echo "✅ Loaded configuration from $CONFIG_FILE"
+
 # Functions
 source ./functions/check_config_env.sh
 source ./functions/check_files.sh
+source ./functions/install_postgresql_operator.sh
 
+# Variables
 export KUBE_VIP_API_YAML
 export KUBE_VIP_LB_YAML
 export INSTALL_K3S_EXEC="$INSTALL_K3S_FIRSTNODE"
@@ -40,9 +50,8 @@ echo $SSH_KEY
 echo $POSTGRESQL_OPERATOR_INSTALL
 echo $POSTGRESQL_NAMESPACE
 
-# Check Deployments & Config Env
+# Check Deployments
 check_deployment $KUBE_VIP_API_YAML $KUBE_VIP_LB_YAML
-check_config_env $CONFIG_FILE
 
 # --- Install K3s on First Node ---
 
@@ -119,8 +128,6 @@ else
 fi
 
 # --- Installation of PostgreSQL Operator --- 
-
-source ./functions/install_postgresql_operator.sh
 install_postgresql_operator $POSTGRESQL_OPERATOR_INSTALL $POSTGRESQL_NAMESPACE $KUBECONFIG
 
 
