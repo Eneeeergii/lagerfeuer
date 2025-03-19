@@ -44,16 +44,7 @@ install_helm(){
         apt-get install --only-upgrade helm && echo "✅ Helm upgraded successfully!" || echo "⚠️ No Updates for Helm available."
     fi
 
-    echo "\n🔍 Checking Helm-Repositories..."
-
-    if helm repo list | grep -q "https"; then
-        echo "🔄 Found Helm-Repositories. Running Update..."
-        helm repo update && echo "✅ Helm-Repositories successfully updated!" || echo "❌ Error during repository updates."
-    else
-        echo "ℹ️ No Helm-Repositories found. There is nothing to update."
-    fi
-
-    echo "\n🎉 Helm installation finished!"
+    echo "🎉 Helm installation finished!"
 
 }
 
@@ -68,8 +59,17 @@ install_postgresql_operator(){
         check_parameters
         install_helm
        
-        echo "\n🔄 Adding Zalando PostgreSQL Operator Helm repository..."
-        helm repo add zalando https://opensource.zalando.com/postgres-operator/charts/
+        # Check if the Zalando repository is already added
+        echo "\n🔍 Checking if Zalando PostgreSQL Operator Helm repository is already added..."
+        if ! helm repo list | awk '{print $1}' | grep -q "^zalando$"; then
+            echo "🔄 Adding Zalando PostgreSQL Operator Helm repository..."
+            helm repo add zalando https://opensource.zalando.com/postgres-operator/charts/postgres-operator
+        else
+            echo "✅ Zalando repository already exists."
+        fi
+
+        # Update Helm repositories
+        echo "\n🔄 Updating Helm repositories..."
         helm repo update
 
         echo "\n🚀 Installing Zalando PostgreSQL Operator..."
