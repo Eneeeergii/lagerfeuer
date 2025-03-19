@@ -5,9 +5,9 @@ metadata:
     app.kubernetes.io/instance: postgres-operator
     app.kubernetes.io/name: postgres-operator
   name: postgresql-operator
-  namespace: ${POSTGRESQL_NAMESPACE}
+  namespace: psql
 configuration:
-  docker_image: ghcr.io/zalando/${POSTGRESQL_SPILO_VERSION}
+  docker_image: ghcr.io/zalando/spilo-17:4.0-p2
   # enable_crd_registration: true
   # crd_categories:
   # - all
@@ -106,7 +106,7 @@ configuration:
     # pod_service_account_definition: ""
     pod_service_account_name: postgres-pod
     # pod_service_account_role_binding_definition: ""
-    # pod_terminate_grace_period: 5m
+    pod_terminate_grace_period: 5m
     secret_name_template: "{username}.{cluster}.credentials.{tprkind}.{tprgroup}"
     share_pgsocket_with_sidecars: false
     spilo_allow_privilege_escalation: true
