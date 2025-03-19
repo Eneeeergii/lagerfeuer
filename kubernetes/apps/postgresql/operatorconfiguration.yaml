@@ -4,7 +4,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: postgres-operator
     app.kubernetes.io/name: postgres-operator
-  name: postgresql-operator
+  name: postgres-operator
   namespace: psql
 configuration:
   docker_image: ghcr.io/zalando/spilo-17:4.0-p2
