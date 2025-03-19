@@ -31,7 +31,6 @@ spec:
       containers:
       - args:
         - manager
-        - service
         env:
         - name: vip_arp
           value: "true"
@@ -44,7 +43,7 @@ spec:
         - name: vip_interface
           value: "${VIP_INTERFACE}"
         - name: vip_cidr
-          value: "32"
+          value: "24"
         - name: dns_mode
           value: first
         - name: cp_enable
@@ -52,9 +51,7 @@ spec:
         - name: cp_namespace
           value: kube-system
         - name: svc_enable
-          value: "true"
-        - name: svc_election
-          value: "true"
+          value: "false"
         - name: vip_leaderelection
           value: "true"
         - name: vip_leasename
@@ -67,8 +64,6 @@ spec:
           value: "1"
         - name: address
           value: "${K3S_API_IP}"
-        - name: address_range
-          value: "${VIP_LB_RANGE}"
         - name: prometheus_server
           value: :2112
         image: ghcr.io/kube-vip/kube-vip:v0.8.9
@@ -80,7 +75,6 @@ spec:
             add:
             - NET_ADMIN
             - NET_RAW
-            - SYS_TIME
       hostNetwork: true
       serviceAccountName: kube-vip-api
       tolerations:
