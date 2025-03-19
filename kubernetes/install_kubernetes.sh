@@ -3,15 +3,12 @@
 set -e  # Stop on error
 set -o pipefail  # Catch pipeline errors
 
+# Environment File
+CONFIG_FILE="./config.env"
+
 # Functions
 source ./functions/check_config_env.sh
 source ./functions/check_files.sh
-
-# Files
-CONFIG_FILE="./config.env"
-KUBE_VIP_API_YAML="./kube-vip-api.yaml"
-KUBE_VIP_LB_YAML="./kube-vip-lb.yaml"
-KUBECONFIG_FILE="/etc/rancher/k3s/k3s.yaml"
 
 # Check Deployments & Config Env
 check_deployment $KUBE_VIP_API_YAML $KUBE_VIP_LB_YAML
@@ -30,6 +27,7 @@ echo "✅ K3s installed successfully!"
 # --- Deploy kube-vip for Kubernetes API VIP ---
 export K3S_API_IP
 export VIP_INTERFACE
+export KUBE_VIP_API_YAML
 
 echo "🚀 Deploying kube-vip for Kubernetes API at $K3S_API_IP on interface $VIP_INTERFACE"
 envsubst < "$KUBE_VIP_API_YAML" | kubectl apply -f -
@@ -38,7 +36,7 @@ echo "✅ kube-vip for Kubernetes API deployed!"
 # --- Optionally Deploy kube-vip for LoadBalancer Services ---
 export VIP_LB_RANGE
 export DEPLOY_LB_KUBEVIP
-export VIP_INTERFACE
+export KUBE_VIP_LB_YAML
 
 if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
     echo "🚀 Deploying kube-vip for LoadBalancer Services with range $VIP_LB_RANGE on interface $VIP_INTERFACE"
@@ -51,10 +49,12 @@ else
 fi
 
 # --- Add API IP in Kubeconfig ---
-check_kubeconfig $KUBECONFIG_FILE
+export KUBECONFIG
 
-echo "🔧 Replacing 127.0.0.1 with ${K3S_API_IP} in $KUBECONFIG_FILE"
-sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$KUBECONFIG_FILE"
+check_kubeconfig $KUBECONFIG
+
+echo "🔧 Replacing 127.0.0.1 with ${K3S_API_IP} in $KUBECONFIG"
+sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$KUBECONFIG"
 echo "✅ K3s kubeconfig updated to use ${K3S_API_IP}"
 
 # --- Add further Master Nodes ---
@@ -105,7 +105,22 @@ fi
 
 export POSTGRESQL_OPERATOR_INSTALL
 export POSTGRESQL_NAMESPACE
-export KUBECONFIG
 
 source ./functions/install_postgresql_operator.sh
 install_postgresql_operator $POSTGRESQL_OPERATOR_INSTALL $POSTGRESQL_NAMESPACE $KUBECONFIG
+
+
+# --- Unset all Variables --- 
+unset $POSTGRESQL_OPERATOR_INSTALL
+unset $POSTGRESQL_NAMESPACE
+unset $SSH_USER
+unset $SSH_KEY
+unset $IP_LB_RANGE
+unset $DEPLOY_LB_KUBEVIP
+unset $VIP_INTERFACE
+unset $KUBE_VIP_LB_YAML
+unset $K3S_API_IP
+unset $KUBE_VIP_API_YAML
+unset $INSTALL_K3S_EXEC
+unset $INSTALL_K3S_VERSION
+unset $K3S_TOKEN
