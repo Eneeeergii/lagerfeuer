@@ -10,6 +10,9 @@ CONFIG_FILE="./config.env"
 source ./functions/check_config_env.sh
 source ./functions/check_files.sh
 
+export KUBE_VIP_API_YAML
+export KUBE_VIP_LB_YAML
+
 # Check Deployments & Config Env
 check_deployment $KUBE_VIP_API_YAML $KUBE_VIP_LB_YAML
 check_config_env $CONFIG_FILE
@@ -27,7 +30,7 @@ echo "✅ K3s installed successfully!"
 # --- Deploy kube-vip for Kubernetes API VIP ---
 export K3S_API_IP
 export VIP_INTERFACE
-export KUBE_VIP_API_YAML
+
 
 echo "🚀 Deploying kube-vip for Kubernetes API at $K3S_API_IP on interface $VIP_INTERFACE"
 envsubst < "$KUBE_VIP_API_YAML" | kubectl apply -f -
@@ -36,7 +39,6 @@ echo "✅ kube-vip for Kubernetes API deployed!"
 # --- Optionally Deploy kube-vip for LoadBalancer Services ---
 export VIP_LB_RANGE
 export DEPLOY_LB_KUBEVIP
-export KUBE_VIP_LB_YAML
 
 if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
     echo "🚀 Deploying kube-vip for LoadBalancer Services with range $VIP_LB_RANGE on interface $VIP_INTERFACE"
