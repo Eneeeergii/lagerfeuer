@@ -48,7 +48,7 @@ spec:
         - name: dns_mode
           value: first
         - name: cp_enable
-          value: "true"
+          value: "false"
         - name: cp_namespace
           value: kube-system
         - name: svc_enable
