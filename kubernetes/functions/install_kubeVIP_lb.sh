@@ -19,8 +19,7 @@ check_parameters_kubevip(){
 
 install_kubeVIP_cloud_provider_on_prem(){
 
-    echo $1
-    $iprange=$1
+    iprange=$1
 
     if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
 
