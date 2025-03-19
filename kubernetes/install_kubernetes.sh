@@ -120,6 +120,8 @@ fi
 # --- Installation of PostgreSQL Operator --- 
 install_postgresql_operator $POSTGRESQL_OPERATOR_INSTALL $POSTGRESQL_NAMESPACE $KUBECONFIG
 
+# --- Deploy Wordpress ---
+
 # --- Unset all Variables --- 
 unset $POSTGRESQL_OPERATOR_INSTALL
 unset $POSTGRESQL_NAMESPACE
