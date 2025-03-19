@@ -60,7 +60,7 @@ install_postgresql_operator(){
         install_helm
        
         # Check if the Zalando repository is already added
-        echo "\n🔍 Checking if Zalando PostgreSQL Operator Helm repository is already added..."
+        echo "🔍 Checking if Zalando PostgreSQL Operator Helm repository is already added..."
         if ! helm repo list | awk '{print $1}' | grep -q "^zalando$"; then
             echo "🔄 Adding Zalando PostgreSQL Operator Helm repository..."
             helm repo add zalando https://opensource.zalando.com/postgres-operator/charts/postgres-operator
@@ -69,14 +69,14 @@ install_postgresql_operator(){
         fi
 
         # Update Helm repositories
-        echo "\n🔄 Updating Helm repositories..."
+        echo "🔄 Updating Helm repositories..."
         helm repo update
 
-        echo "\n🚀 Installing Zalando PostgreSQL Operator..."
+        echo "🚀 Installing Zalando PostgreSQL Operator..."
         kubectl create namespace $namespace || echo "⚠️ Namespace already exists."
         helm upgrade --install postgres-operator zalando/postgres-operator -n $namespace --kubeconfig=$kubeconfig
 
-        echo "\n🎉 Zalando PostgreSQL Operator has been successfully installed!"
+        echo "🎉 Zalando PostgreSQL Operator has been successfully installed!"
         
     elif [ "$POSTGRESQL_OPERATOR_INSTALL" == "false" ]; then
 
