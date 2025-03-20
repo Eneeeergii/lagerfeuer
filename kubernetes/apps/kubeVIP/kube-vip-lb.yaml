@@ -30,7 +30,7 @@ spec:
         - name: vip_interface
           value: "${VIP_INTERFACE}"
         - name: vip_cidr
-          value: "24"
+          value: "32"
         - name: svc_enable
           value: "true"
         - name: svc_election
