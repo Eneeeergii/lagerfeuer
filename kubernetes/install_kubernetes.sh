@@ -65,22 +65,24 @@ create_ha_kubeconfig $KUBECONFIG $KUBECONFIG_HA $K3S_API_IP
 
 # --- Add further Master Nodes ---
 
-if [ "$HA_CLUSTER" == "true" ]; then
-    IFS=',' read -r -a MASTER_NODES <<< "$MASTERS"
-    
-    for master in "${MASTER_NODES[@]}"; do
-        echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
-        ssh -i "$SSH_KEY" "$SSH_USER@$master" << EOF
-curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s - server --server https://$K3S_API_IP:6443 --write-kubeconfig-mode 644
-EOF
-        echo "✅ K3s installed and $master is added to K3s Cluster!"
-    done
-elif [ "$HA_CLUSTER" == "false" ]; then
-    echo "✅ K3S installed as a Single Node"
-else
-    echo "Please Check HA_CLUSTER Parameter, actual value is: $HA_CLUSTER"
-    exit 1
-fi
+install_additional_master_node
+
+#if [ "$HA_CLUSTER" == "true" ]; then
+#    IFS=',' read -r -a MASTER_NODES <<< "$MASTERS"
+#    
+#    for master in "${MASTER_NODES[@]}"; do
+#        echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
+#        ssh -i "$SSH_KEY" "$SSH_USER@$master" << EOF
+#curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s - server --server https://$K3S_API_IP:6443 --write-kubeconfig-mode 644
+#EOF
+#        echo "✅ K3s installed and $master is added to K3s Cluster!"
+#    done
+#elif [ "$HA_CLUSTER" == "false" ]; then
+#    echo "✅ K3S installed as a Single Node"
+#else
+#    echo "Please Check HA_CLUSTER Parameter, actual value is: $HA_CLUSTER"
+#    exit 1
+#fi
 
 # --- Adding WORKER Nodes ---
 
