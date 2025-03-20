@@ -44,7 +44,7 @@ install_firstnode_local
 # --- Deploy kube-vip for Kubernetes API VIP ---
 
 # Check if Deployment exists
-check_deployment $KUBE_VIP_API_YAML
+check_file $KUBE_VIP_API_YAML
 
 # Install KubeVIP for API
 install_kubeVIP_HA_API
