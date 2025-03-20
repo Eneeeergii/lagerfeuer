@@ -8,9 +8,6 @@ echo "✅ Loaded configuration from $CONFIG_FILE"
 
 check_logical_volume(){
 
-    VG_NAME=$1
-    LV_NAME=$2
-
     sudo lvdisplay "/dev/$VG_NAME/$LV_NAME" &> /dev/null
 
 }
