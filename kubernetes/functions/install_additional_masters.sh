@@ -52,7 +52,6 @@ if grep -q "KUBECONFIG=" /etc/environment; then
 else
     echo "KUBECONFIG=$HA_KUBECONFIG" | sudo tee -a /etc/environment
 fi
-export KUBECONFIG="$HA_KUBECONFIG"
 
 echo "✅ New KUBECONFIG set to $HA_KUBECONFIG on $master"
 EOF
