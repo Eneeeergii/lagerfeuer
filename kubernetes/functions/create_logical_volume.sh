@@ -18,8 +18,8 @@ create_logical_volume(){
     VG_NAME=$2
     LV_SIZE=$3
     BASE_MOUNT_POINT=$4
-    MOUNT_POINT="$BASE_MOUNT_POINT$LV_NAME-storage"
     LV_NAME="lv_$NAME"
+    MOUNT_POINT="$BASE_MOUNT_POINT$LV_NAME-storage"
     FSTAB_ENTRY="/dev/$VG_NAME/$LV_NAME $MOUNT_POINT ext4 defaults 0 0"
 
     echo $LV_NAME
