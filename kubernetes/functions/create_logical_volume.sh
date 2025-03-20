@@ -12,7 +12,8 @@ create_logical_volume(){
     LV_NAME=$1
     VG_NAME=$2
     LV_SIZE=$3
-    MOUNT_POINT=$4
+    BASE_MOUNT_POINT=$4
+    MOUNT_POINT="$BASE_MOUNT_POINT$LV_NAME-storage"
     FSTAB_ENTRY="/dev/$VG_NAME/$LV_NAME $MOUNT_POINT ext4 defaults 0 0"
 
     if check_logical_volume; then
@@ -21,7 +22,7 @@ create_logical_volume(){
         echo "⚠️ Logical Volume '$LV_NAME' does not exist. Creating it now..."
         lvcreate -L "$LV_SIZE" -n "$LV_NAME" "$VG_NAME"
 
-        if check_lv; then
+        if check_logical_volume; then
             echo "✅ Logical Volume '$LV_NAME' created successfully."
         else
             echo "❌ Error: Failed to create Logical Volume '$LV_NAME'. Exiting..."
@@ -42,6 +43,8 @@ create_logical_volume(){
     if [ ! -d "$MOUNT_POINT" ]; then
         echo "⚠️ Mount point '$MOUNT_POINT' does not exist. Creating it now..."
         sudo mkdir -p "$MOUNT_POINT"
+    else
+        echo "❌ Error: Mount point '$MOUNT_POINT' already exists! Exiting..."
     fi
 
     # Mount the LV
