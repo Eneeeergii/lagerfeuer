@@ -19,7 +19,7 @@ create_logical_volume(){
     LV_SIZE=$3
     BASE_MOUNT_POINT=$4
     MOUNT_POINT="$BASE_MOUNT_POINT$LV_NAME-storage"
-    lV_NAME="lv_$NAME"
+    LV_NAME="lv_$NAME"
     FSTAB_ENTRY="/dev/$VG_NAME/$LV_NAME $MOUNT_POINT ext4 defaults 0 0"
 
     echo $LV_NAME
@@ -29,6 +29,7 @@ create_logical_volume(){
     echo $MOUNT_POINT
     echo $FSTAB_ENTRY
 
+    # Create LV if not already exist
     if check_logical_volume; then
         echo "✅ Logical Volume '$LV_NAME' already exists in Volume Group '$VG_NAME'."
     else
