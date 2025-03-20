@@ -16,14 +16,3 @@ check_deployment(){
     fi
 
 }
-
-check_kubeconfig(){
-
-    KUBECONFIG_FILE=$1
-
-    if [ ! -f "$KUBE_VIP_API_YAML" ]; then
-        echo "❌ kube-vip API YAML file '$KUBE_VIP_API_YAML' not found!"
-        exit 1
-    fi
-
-}
