@@ -41,7 +41,6 @@ create_ha_kubeconfig(){
     fi
 
     # Apply the new environment variable
-    export KUBECONFIG="$HA_KUBECONFIG"
 
     echo "✅ New KUBECONFIG set to $HA_KUBECONFIG"
     echo "⚠️ Run 'source /etc/environment' or restart your session to apply the changes."
