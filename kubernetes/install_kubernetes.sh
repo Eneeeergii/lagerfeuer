@@ -19,6 +19,7 @@ source ./functions/check_config_env.sh
 source ./functions/check_files.sh
 source ./functions/install_postgresql_operator.sh
 source ./functions/install_kubeVIP_lb.sh
+source ./functions/create_kubeconfig.sh
 
 # Variables
 export KUBE_VIP_API_YAML
@@ -73,11 +74,13 @@ install_kubeVIP_cloud_provider_on_prem $VIP_LB_RANGE
 
 # --- Add API IP in Kubeconfig ---
 
-check_kubeconfig $KUBECONFIG
+create_ha_kubeconfig $KUBECONFIG $KUBECONFIG_HA $K3S_API_IP
 
-echo "🔧 Replacing 127.0.0.1 with ${K3S_API_IP} in $KUBECONFIG"
-sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$KUBECONFIG"
-echo "✅ K3s kubeconfig updated to use ${K3S_API_IP}"
+#check_kubeconfig $KUBECONFIG
+
+#echo "🔧 Replacing 127.0.0.1 with ${K3S_API_IP} in $KUBECONFIG"
+#sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$KUBECONFIG"
+#echo "✅ K3s kubeconfig updated to use ${K3S_API_IP}"
 
 # --- Add further Master Nodes ---
 
