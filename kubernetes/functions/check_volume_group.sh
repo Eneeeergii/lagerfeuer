@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 check_volume_group(){
 
     VG_NAME=$1

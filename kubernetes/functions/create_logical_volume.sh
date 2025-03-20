@@ -1,3 +1,11 @@
+#!/bin/bash
+set -e
+
+#For isolated test do this first:
+CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
+source "$CONFIG_FILE"
+echo "✅ Loaded configuration from $CONFIG_FILE"
+
 check_logical_volume(){
 
     VG_NAME=$1
@@ -76,3 +84,5 @@ create_logical_volume(){
     echo "🎉 Setup complete! Logical Volume '$LV_NAME' is mounted at '$MOUNT_POINT'."
 
 }
+
+create_logical_volume $POSTGRESQL_LV_AND_PV_NAME $VOLUME_GROUP_NAME $POSTGRESQL_LV_AND_PV_SIZE $LOGICAL_VOLUME_MOUNT_POINT
