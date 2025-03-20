@@ -48,6 +48,7 @@ check_file $KUBE_VIP_API_YAML
 
 # Install KubeVIP for API
 install_kubeVIP_HA_API
+sleep 20
 
 # --- Deploy KubeVIP & KubeVIP Cloud Provider for Load Balancing ---
 
