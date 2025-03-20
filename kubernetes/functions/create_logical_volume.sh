@@ -14,11 +14,12 @@ check_logical_volume(){
 
 create_logical_volume(){
 
-    LV_NAME=$1
+    NAME=$1
     VG_NAME=$2
     LV_SIZE=$3
     BASE_MOUNT_POINT=$4
     MOUNT_POINT="$BASE_MOUNT_POINT$LV_NAME-storage"
+    lV_NAME="lv_$NAME"
     FSTAB_ENTRY="/dev/$VG_NAME/$LV_NAME $MOUNT_POINT ext4 defaults 0 0"
 
     echo $LV_NAME
