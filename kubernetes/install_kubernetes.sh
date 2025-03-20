@@ -14,28 +14,12 @@ fi
 source "$CONFIG_FILE"
 echo "✅ Loaded configuration from $CONFIG_FILE"
 
-# Functions
-source ./functions/check_config_env.sh
-source ./functions/check_files.sh
-source ./functions/install_postgresql_operator.sh
-source ./functions/install_kubeVIP_lb.sh
-source ./functions/create_kubeconfig.sh
-
-# Variables
-export KUBE_VIP_API_YAML
-export KUBE_VIP_LB_YAML
-export INSTALL_K3S_EXEC="$INSTALL_K3S_FIRSTNODE"
-export INSTALL_K3S_VERSION="$K3S_VERSION"
-export K3S_TOKEN
-export K3S_API_IP
-export VIP_INTERFACE
-export VIP_LB_RANGE
-export DEPLOY_LB_KUBEVIP
-export KUBECONFIG
-export SSH_USER
-export SSH_KEY
-export POSTGRESQL_OPERATOR_INSTALL
-export POSTGRESQL_NAMESPACE
+# Include all functions
+for file in ./functions/*.sh; do
+    if [ -f "$file" ]; then
+        source "$file"
+    fi
+done
 
 #Check Output of Variables
 #echo $KUBE_VIP_API_YAML
@@ -53,34 +37,31 @@ export POSTGRESQL_NAMESPACE
 #echo $POSTGRESQL_OPERATOR_INSTALL
 #echo $POSTGRESQL_NAMESPACE
 
-# Check Deployments
-check_deployment $KUBE_VIP_API_YAML $KUBE_VIP_LB_YAML
-
 # --- Install K3s on First Node ---
 
-echo "🚀 Installing K3s version $K3S_VERSION with options: $INSTALL_K3S_EXEC"
-curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s -
-echo "✅ K3s installed successfully!"
+install_firstnode_local
 
 # --- Deploy kube-vip for Kubernetes API VIP ---
 
-echo "🚀 Deploying kube-vip for Kubernetes API at $K3S_API_IP on interface $VIP_INTERFACE"
-envsubst < "$KUBE_VIP_API_YAML" | kubectl apply -f -
-echo "✅ kube-vip for Kubernetes API deployed!"
+# Check if Deployment exists
+check_deployment $KUBE_VIP_API_YAML
+
+# Install KubeVIP for API
+install_kubeVIP_HA_API
 
 # --- Deploy KubeVIP & KubeVIP Cloud Provider for Load Balancing ---
 
-install_kubeVIP_cloud_provider_on_prem $VIP_LB_RANGE
+# Check if Deployments exist
+check_file $KUBE_VIP_LB_YAML
+check_file $KUBE_VIP_CLOUD_PROVIDER_YAML
+check_file $KUBE_VIP_CLOUD_PROVIDER_CONFIGMAP_YAML
 
-# --- Add API IP in Kubeconfig ---
+# Install KubeVIP for Service LB
+install_kubeVIP_SVC_LB
+
+# --- Create KUBECONFIG with API IP ---
 
 create_ha_kubeconfig $KUBECONFIG $KUBECONFIG_HA $K3S_API_IP
-
-#check_kubeconfig $KUBECONFIG
-
-#echo "🔧 Replacing 127.0.0.1 with ${K3S_API_IP} in $KUBECONFIG"
-#sed -i "s/127.0.0.1/${K3S_API_IP}/g" "$KUBECONFIG"
-#echo "✅ K3s kubeconfig updated to use ${K3S_API_IP}"
 
 # --- Add further Master Nodes ---
 

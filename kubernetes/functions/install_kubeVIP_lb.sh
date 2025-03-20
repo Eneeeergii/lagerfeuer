@@ -2,32 +2,34 @@
 set -e
 
 #For isolated test do this first:
-#Disable lines 22 & 27
-#Enable lines 5-7, 29-30 & 53
 #CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
 #source "$CONFIG_FILE"
 #echo "✅ Loaded configuration from $CONFIG_FILE"
 
 check_parameters_kubevip(){
 
+    if [ -z "$VIP_INTERFACE" ]; then
+        echo "❌ VIP_INTERFACE is not set!"
+        exit 1
+    fi
+
     if [ -z "$VIP_LB_RANGE" ]; then
-        echo "❌ NAMESPACE is not set!"
+        echo "❌ VIP_LB_RANGE is not set!"
         exit 1
     fi
 
 }
 
-install_kubeVIP_cloud_provider_on_prem(){
+install_kubeVIP_SVC_LB(){
 
-    iprange=$1
+    check_parameters_kubevip
 
     if [ "$DEPLOY_LB_KUBEVIP" == "true" ]; then
 
         echo "🚀 Installing KubeVIP Loadbalancer Service..."
 
-        export VIP_LB_RANGE=$iprange
-        #export VIP_LB_RANGE
-        #echo $VIP_LB_RANGE
+        export VIP_LB_RANGE
+        export VIP_INTERFACE
 
         envsubst < "$KUBE_VIP_LB_YAML" | kubectl apply -f - > /dev/null 2>&1
         echo "✅ KubeVIP DaemonSet applied!"
@@ -37,6 +39,7 @@ install_kubeVIP_cloud_provider_on_prem(){
         echo "✅ KubeVIP Cloud Provider on premise RBAC & Deployment applied!"
 
         unset $VIP_LB_RANGE
+        unset $VIP_INTERFACE
           
     elif [ "$DEPLOY_LB_KUBEVIP" == "false" ]; then
 

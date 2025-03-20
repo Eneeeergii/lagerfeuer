@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 create_ha_kubeconfig(){
 
     ORIGINAL_KUBECONFIG=$1
