@@ -8,11 +8,6 @@ install_additional_master_node(){
     API_IP=$3
     NEW_URL="https://$API_IP:6443"
 
-    echo $ORIGINAL_KUBECONFIG
-    echo $HA_KUBECONFIG
-    echo $API_IP
-    echo $NEW_URL
-
     if [ -z "$MASTERS" ]; then
         echo "❌ MASTERS is not set!"
         exit 1
