@@ -41,21 +41,22 @@ if [ ! -f "$ORIGINAL_KUBECONFIG" ]; then
     echo "❌ Error: Original kubeconfig file not found at $ORIGINAL_KUBECONFIG"
     exit 1
 fi
-if grep -q "$NEW_URL" "$HA_KUBECONFIG"; then
-        echo "✅ Successfully updated server URL in $HA_KUBECONFIG on $master"
-    else
-        echo "❌ Error: Failed to update server URL on $master"
-        exit 1
-    fi
 
-    # Set the new KUBECONFIG in /etc/environment
-    if grep -q "KUBECONFIG=" /etc/environment; then
-        sed -i "s|KUBECONFIG=.*|KUBECONFIG=$HA_KUBECONFIG|" /etc/environment
-    else
-        echo "KUBECONFIG=$HA_KUBECONFIG" | sudo tee -a /etc/environment
-    fi
 cp "$ORIGINAL_KUBECONFIG" "$HA_KUBECONFIG"
 sed -i "s|https://127.0.0.1:6443|$NEW_URL|g" "$HA_KUBECONFIG"
+
+if grep -q "$NEW_URL" "$HA_KUBECONFIG"; then
+    echo "✅ Successfully updated server URL in $HA_KUBECONFIG on $master"
+else
+    echo "❌ Error: Failed to update server URL on $master"
+    exit 1
+fi
+
+if grep -q "KUBECONFIG=" /etc/environment; then
+    sed -i "s|KUBECONFIG=.*|KUBECONFIG=$HA_KUBECONFIG|" /etc/environment
+else
+    echo "KUBECONFIG=$HA_KUBECONFIG" | sudo tee -a /etc/environment
+fi
 export KUBECONFIG="$HA_KUBECONFIG"
 
 echo "✅ New KUBECONFIG set to $HA_KUBECONFIG on $master"

@@ -8,6 +8,11 @@ create_ha_kubeconfig(){
     API_IP=$3
     NEW_URL="https://$API_IP:6443"
 
+    echo $ORIGINAL_KUBECONFIG
+    echo $HA_KUBECONFIG
+    echo $API_IP
+    echo $NEW_URL
+
     # Check if Kubeconfig exists
     if [ ! -f "$ORIGINAL_KUBECONFIG" ]; then
         echo "❌ Error: Original kubeconfig file not found at $ORIGINAL_KUBECONFIG"
