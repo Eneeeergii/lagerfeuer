@@ -8,6 +8,8 @@ install_additional_master_node(){
     API_IP=$3
     NEW_URL="https://$API_IP:6443"
 
+    CURRENT_HOSTNAME=$(hostname)
+
     if [ -z "$MASTERS" ]; then
         echo "❌ MASTERS is not set!"
         exit 1
@@ -29,8 +31,11 @@ install_additional_master_node(){
     IFS=',' read -r -a MASTER_NODES <<< "$MASTERS"
     
     for master in "${MASTER_NODES[@]}"; do
-        echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
-        ssh -i "$SSH_KEY" "$SSH_USER@$master" << EOF
+
+        if [[ "$CURRENT_HOSTNAME" != "$master" ]]; then
+
+            echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
+            ssh -i "$SSH_KEY" "$SSH_USER@$master" << EOF
 curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s - server --server https://$K3S_API_IP:6443 --write-kubeconfig-mode 644
 if [ ! -f "$ORIGINAL_KUBECONFIG" ]; then
     echo "❌ Error: Original kubeconfig file not found at $ORIGINAL_KUBECONFIG"
@@ -55,8 +60,11 @@ fi
 
 echo "✅ New KUBECONFIG set to $HA_KUBECONFIG on $master"
 EOF
-        echo "✅ K3s installed, KUBECONFIG chenged and $master is added to K3s Cluster!"
+            echo "✅ K3s installed, KUBECONFIG chenged and $master is added to K3s Cluster!"
+
+        fi
     done
+    
     elif [ "$HA_CLUSTER" == "false" ]; then
         echo "✅ K3S installed as a Single Node"
     else

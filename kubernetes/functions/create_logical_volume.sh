@@ -2,9 +2,9 @@
 set -e
 
 #For isolated test do this first:
-CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
-source "$CONFIG_FILE"
-echo "✅ Loaded configuration from $CONFIG_FILE"
+#CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
+#source "$CONFIG_FILE"
+#echo "✅ Loaded configuration from $CONFIG_FILE"
 
 check_logical_volume(){
 
@@ -21,13 +21,6 @@ create_logical_volume(){
     LV_NAME="lv_$NAME"
     MOUNT_POINT="$BASE_MOUNT_POINT$LV_NAME-storage"
     FSTAB_ENTRY="/dev/$VG_NAME/$LV_NAME $MOUNT_POINT ext4 defaults 0 0"
-
-    echo $LV_NAME
-    echo $VG_NAME
-    echo $LV_SIZE
-    echo $BASE_MOUNT_POINT
-    echo $MOUNT_POINT
-    echo $FSTAB_ENTRY
 
     # Create LV if not already exist
     if check_logical_volume; then
@@ -91,9 +84,4 @@ create_logical_volume(){
 
 }
 
-echo $POSTGRESQL_LV_AND_PV_NAME 
-echo $VOLUME_GROUP_NAME 
-echo $POSTGRESQL_LV_AND_PV_SIZE 
-echo $LOGICAL_VOLUME_MOUNT_POINT
-
-create_logical_volume $POSTGRESQL_LV_AND_PV_NAME $VOLUME_GROUP_NAME $POSTGRESQL_LV_AND_PV_SIZE $LOGICAL_VOLUME_MOUNT_POINT
+#create_logical_volume $POSTGRESQL_LV_AND_PV_NAME $VOLUME_GROUP_NAME $POSTGRESQL_LV_AND_PV_SIZE $LOGICAL_VOLUME_MOUNT_POINT
