@@ -66,7 +66,7 @@ create_ha_kubeconfig $KUBECONFIG $KUBECONFIG_HA $K3S_API_IP
 
 # --- Add further Master Nodes ---
 
-install_additional_master_node
+install_additional_master_node $KUBECONFIG $KUBECONFIG_HA $K3S_API_IP
 
 #if [ "$HA_CLUSTER" == "true" ]; then
 #    IFS=',' read -r -a MASTER_NODES <<< "$MASTERS"
