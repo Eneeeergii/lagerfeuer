@@ -30,8 +30,6 @@ create_logical_volume(){
         size="${SIZES[$i]}"
         LV_SIZE=$size
 
-        echo $LV_SIZE
-
         # Create LV if not already exist
         if check_logical_volume; then
            echo "✅ Logical Volume '$LV_NAME' already exists in Volume Group '$VG_NAME'."
