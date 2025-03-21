@@ -64,16 +64,22 @@ create_logical_volume(){
                 echo "✅ Mount point '$MOUNT_POINT' already exists!"
             fi
 
-            # Mount the LV
-            echo "🔄 Mounting Logical Volume..."
-            sudo mount "/dev/$VG_NAME/$LV_NAME" "$MOUNT_POINT"
 
             # Verify mount success
             if mountpoint -q "$MOUNT_POINT"; then
                 echo "✅ Successfully mounted at '$MOUNT_POINT'."
             else
-                echo "❌ Error: Mounting failed. Exiting..."
-                exit 1
+                # Mount the LV
+                echo "🔄 Mounting Logical Volume..."
+                sudo mount "/dev/$VG_NAME/$LV_NAME" "$MOUNT_POINT"
+
+                if mountpoint -q "$MOUNT_POINT"; then
+                    echo "✅ Successfully mounted at '$MOUNT_POINT'."
+                else
+                    echo "❌ Error: Logical Volume could not be mounted"
+                    exit !
+                fi
+
             fi
 
             # Add entry to fstab if not already present
