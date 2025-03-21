@@ -22,7 +22,7 @@ create_logical_volume(){
 
     for lv in "${LVS[@]}"; do
 
-        i=1
+        i=0
 
         NAME=$lv
         LV_NAME="lv_k3s_$NAME"
@@ -30,6 +30,8 @@ create_logical_volume(){
         FSTAB_ENTRY="/dev/$VG_NAME/$NAME $MOUNT_POINT ext4 defaults 0 0"
         size="${SIZES[$i]}"
         LV_SIZE=$size
+
+        echo $LV_SIZE
 
         # Create LV if not already exist
         if check_logical_volume; then
