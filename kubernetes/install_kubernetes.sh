@@ -21,46 +21,65 @@ for file in ./functions/*.sh; do
     fi
 done
 
-### --- Install K3s on First Node ---
-install_firstnode_local
 
-# --- Create logical Volumes ---
+if [ "$HA_CLUSTER" == "true" ]; then
 
-check_volume_group
-create_logical_volume
+    ### --- Install K3s on First Node ---
+    install_firstnode_local
 
-# --- Deploy kube-vip for Kubernetes API VIP ---
+    # --- Create logical Volumes ---
 
-#Check if Deployment exists
+    check_volume_group
+    create_logical_volume
+    
+    # --- Deploy kube-vip for Kubernetes API VIP ---
 
-check_file $KUBE_VIP_API_YAML
+    #Check if Deployment exists
 
-#Install KubeVIP for API
+    check_file $KUBE_VIP_API_YAML
 
-install_kubeVIP_HA_API
+    #Install KubeVIP for API
 
-# --- Deploy KubeVIP & KubeVIP Cloud Provider for Load Balancing ---
+    install_kubeVIP_HA_API
 
-#Check if Deployments exist
-check_file $KUBE_VIP_LB_YAML
-check_file $KUBE_VIP_CLOUD_PROVIDER_YAML
-check_file $KUBE_VIP_CLOUD_PROVIDER_CONFIGMAP_YAML
+    # --- Deploy KubeVIP & KubeVIP Cloud Provider for Load Balancing ---
 
-# Install KubeVIP for Service LB
+    #Check if Deployments exist
+    check_file $KUBE_VIP_LB_YAML
+    check_file $KUBE_VIP_CLOUD_PROVIDER_YAML
+    check_file $KUBE_VIP_CLOUD_PROVIDER_CONFIGMAP_YAML
 
-install_kubeVIP_SVC_LB
+    # Install KubeVIP for Service LB
 
-# --- Create KUBECONFIG with API IP ---
+    install_kubeVIP_SVC_LB
 
-create_ha_kubeconfig
+    # --- Create KUBECONFIG with API IP ---
 
-### --- Adding Master Nodes ---
+    create_ha_kubeconfig
 
-install_additional_master_node
+    ### --- Adding Master Nodes ---
 
-### --- Adding WORKER Nodes ---
+    install_additional_master_node
 
-install_additional_worker_node
+    ### --- Adding WORKER Nodes ---
 
-# --- Installation of PostgreSQL Operator --- 
-#install_postgresql_operator $POSTGRESQL_OPERATOR_INSTALL $POSTGRESQL_NAMESPACE $KUBECONFIG
+    install_additional_worker_node
+
+    # --- Installation of PostgreSQL Operator --- 
+    #install_postgresql_operator $POSTGRESQL_OPERATOR_INSTALL $POSTGRESQL_NAMESPACE $KUBECONFIG
+elif [ "$HA_CLUSTER" == "false" ]; then
+
+    echo "✅ K3s Single is ready to go"
+
+    ### --- Install K3s on First Node ---
+    install_firstnode_local
+
+    # --- Create logical Volumes ---
+
+    check_volume_group
+    create_logical_volume
+
+else
+    echo "❌ Value of HA_CLUSTER is not valid!"
+    exit 1
+fi

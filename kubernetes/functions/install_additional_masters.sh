@@ -8,8 +8,6 @@ set -e
 
 install_additional_master_node(){
 
-    CURRENT_HOSTNAME=$(hostname)
-
     if [ -z "$MASTERS" ]; then
         echo "❌ MASTERS is not set!"
         exit 1
@@ -25,43 +23,30 @@ install_additional_master_node(){
         exit 1
     fi
 
-
-    if [ "$HA_CLUSTER" == "true" ]; then
     IFS=',' read -r -a MASTER_NODES <<< "$MASTERS"
     
     for master in "${MASTER_NODES[@]}"; do
 
-        if [[ "$CURRENT_HOSTNAME" != "$master" ]]; then
+        echo "🚀 Copying Files to $master"
+        scp -i "$SSH_KEY" ./remote_functions/remote_create_lv.sh "$SSH_USER@$master:/tmp/remote_create_lv.sh"
+        scp -i "$SSH_KEY" ./remote_functions/remote_install_k3s.sh "$SSH_USER@$master:/tmp/remote_install_k3s.sh"
+        scp -i "$SSH_KEY" ./config.env "$SSH_USER@$master:/tmp/config.env"
 
-            echo "🚀 Copying Files to $master"
-            scp -i "$SSH_KEY" ./remote_functions/remote_create_lv.sh "$SSH_USER@$master:/tmp/remote_create_lv.sh"
-            scp -i "$SSH_KEY" ./remote_functions/remote_install_k3s.sh "$SSH_USER@$master:/tmp/remote_install_k3s.sh"
-            scp -i "$SSH_KEY" ./config.env "$SSH_USER@$master:/tmp/config.env"
+        echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
+        ssh -i "$SSH_KEY" "$SSH_USER@$master" "bash /tmp/remote_install_k3s.sh"
+        echo "✅ K3s installed, KUBECONFIG chenged and $master is added to K3s Cluster!"
 
-            echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
-            ssh -i "$SSH_KEY" "$SSH_USER@$master" "bash /tmp/remote_install_k3s.sh"
-            echo "✅ K3s installed, KUBECONFIG chenged and $master is added to K3s Cluster!"
-
-            echo "🚀 Creating Logical Volumes on $master"
-            ssh -i "$SSH_KEY" "$SSH_USER@$master" "bash /tmp/remote_create_lv.sh"
-            echo "✅ Logical Volumes on $master are created!"
-            
-            echo "🚀 Deleting files on $master"
-            ssh -i "$SSH_KEY" "$SSH_USER@$master" "rm -f /tmp/remote_create_lv.sh"
-            ssh -i "$SSH_KEY" "$SSH_USER@$master" "rm -f /tmp/remote_install_k3s.sh"
-            ssh -i "$SSH_KEY" "$SSH_USER@$master" "rm -f /tmp/config.env"
-            echo "✅ All files deleted on $master"
-
-        fi
+        echo "🚀 Creating Logical Volumes on $master"
+        ssh -i "$SSH_KEY" "$SSH_USER@$master" "bash /tmp/remote_create_lv.sh"
+        echo "✅ Logical Volumes on $master are created!"
+        
+        echo "🚀 Deleting files on $master"
+        ssh -i "$SSH_KEY" "$SSH_USER@$master" "rm -f /tmp/remote_create_lv.sh"
+        ssh -i "$SSH_KEY" "$SSH_USER@$master" "rm -f /tmp/remote_install_k3s.sh"
+        ssh -i "$SSH_KEY" "$SSH_USER@$master" "rm -f /tmp/config.env"
+        echo "✅ All files deleted on $master"
 
     done
-    
-    elif [ "$HA_CLUSTER" == "false" ]; then
-        echo "✅ K3S installed as a Single Node"
-    else
-        echo "❌ Current value of HA_CLUSTER is not allowed: $HA_CLUSTER"
-        exit 1
-    fi
 
 }
 
