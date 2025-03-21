@@ -79,7 +79,6 @@ create_logical_volume(){
                     echo "❌ Error: Logical Volume could not be mounted"
                     exit !
                 fi
-
             fi
 
             # Add entry to fstab if not already present
