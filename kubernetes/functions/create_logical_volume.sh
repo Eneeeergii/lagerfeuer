@@ -18,6 +18,7 @@ create_logical_volume(){
     BASE_MOUNT_POINT=$LOGICAL_VOLUME_MOUNT_POINT
 
     IFS=',' read -r -a LVS <<< "$LOGICAL_VOLUMES"
+    IFS=',' read -r -a SIZES <<< "$LOGICAL_VOLUMES_SIZE"
 
     for lv in "${LVS[@]}"; do
 
@@ -26,11 +27,7 @@ create_logical_volume(){
         MOUNT_POINT="$BASE_MOUNT_POINT$NAME"
         FSTAB_ENTRY="/dev/$VG_NAME/$NAME $MOUNT_POINT ext4 defaults 0 0"
         i=1
-
-        IFS=',' read -r -a SIZES <<< "$LOGICAL_VOLUMES_SIZE"
-
         size="${SIZES[$i]}"
-
         LV_SIZE=$size
 
         # Create LV if not already exist
