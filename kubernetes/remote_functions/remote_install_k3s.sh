@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CONFIG_FILE=./config.env
+CONFIG_FILE=/tmp/config.env
 source "$CONFIG_FILE"
 echo "✅ Loaded configuration from $CONFIG_FILE"
 
