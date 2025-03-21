@@ -3,13 +3,6 @@
 set -e  # Stop on error
 set -o pipefail  # Catch pipeline errors
 
-# Include all functions
-for file in ./functions/*.sh; do
-    if [ -f "$file" ]; then
-        source "$file"
-    fi
-done
-
 # Environment File
 CONFIG_FILE="./config.env"
 
@@ -20,6 +13,13 @@ fi
 
 source "$CONFIG_FILE"
 echo "✅ Loaded configuration from $CONFIG_FILE"
+
+# Include all functions
+for file in ./functions/*.sh; do
+    if [ -f "$file" ]; then
+        source "$file"
+    fi
+done
 
 #Check Output of Variables
 #echo $KUBE_VIP_API_YAML
