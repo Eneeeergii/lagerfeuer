@@ -2,9 +2,9 @@
 set -e
 
 #For isolated test do this first:
-CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
-source "$CONFIG_FILE"
-echo "✅ Loaded configuration from $CONFIG_FILE"
+#CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
+#source "$CONFIG_FILE"
+#echo "✅ Loaded configuration from $CONFIG_FILE"
 
 install_additional_master_node(){
 
@@ -34,9 +34,6 @@ install_additional_master_node(){
 
     if [ "$HA_CLUSTER" == "true" ]; then
     IFS=',' read -r -a MASTER_NODES <<< "$MASTERS"
-
-    echo $MASTER_NODES
-    exit 1
     
     for master in "${MASTER_NODES[@]}"; do
 
@@ -84,4 +81,4 @@ EOF
 
 }
 
-install_additional_master_node $KUBECONFIG $KUBECONFIG_HA $K3S_API_IP
+#install_additional_master_node $KUBECONFIG $KUBECONFIG_HA $K3S_API_IP

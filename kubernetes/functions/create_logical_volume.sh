@@ -23,6 +23,8 @@ create_logical_volume(){
 
     for lv in "${LVS[@]}"; do
 
+        echo $lv
+
         NAME=$lv
         LV_NAME="lv_k3s_$NAME"
         MOUNT_POINT="$BASE_MOUNT_POINT$NAME"
