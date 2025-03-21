@@ -1,12 +1,10 @@
 #!/bin/bash
 set -e
 
-source ./functions/remote_functions/install_k3s_remote.sh
-
 #For isolated test do this first:
-CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
-source "$CONFIG_FILE"
-echo "✅ Loaded configuration from $CONFIG_FILE"
+#CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
+#source "$CONFIG_FILE"
+#echo "✅ Loaded configuration from $CONFIG_FILE"
 
 install_additional_master_node(){
 

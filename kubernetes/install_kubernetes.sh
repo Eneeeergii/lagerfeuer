@@ -43,16 +43,19 @@ source ./functions/install_firstnode.sh
 install_firstnode_local
 
 # --- Create logical Volumes ---
-
+source ./functions/check_volume_group.sh
 check_volume_group
+source ./functions/create_logical_volume.sh
 create_logical_volume
 
 # --- Deploy kube-vip for Kubernetes API VIP ---
 
 #Check if Deployment exists
+source ./functions/check_file.sh
 check_file $KUBE_VIP_API_YAML
 
 #Install KubeVIP for API
+source ./functions/install_kubeVIP_api.sh
 install_kubeVIP_HA_API
 
 # --- Deploy KubeVIP & KubeVIP Cloud Provider for Load Balancing ---
@@ -63,14 +66,16 @@ check_file $KUBE_VIP_CLOUD_PROVIDER_YAML
 check_file $KUBE_VIP_CLOUD_PROVIDER_CONFIGMAP_YAML
 
 # Install KubeVIP for Service LB
+source ./functions/install_kubeVIP_lb.sh
 install_kubeVIP_SVC_LB
 
 # --- Create KUBECONFIG with API IP ---
-
+source ./functions/create_kubeconfig.sh
 create_ha_kubeconfig
 
 ### --- Add further Master Nodes ---
 
+source ./functions/install_additional_masters.sh
 install_additional_master_node
 
 # --- Adding WORKER Nodes ---
