@@ -17,14 +17,18 @@ create_logical_volume(){
     VG_NAME=$VOLUME_GROUP_NAME
     BASE_MOUNT_POINT=$LOGICAL_VOLUME_MOUNT_POINT
 
-    for lv in "${LOGICAL_VOLUMES[@]}"; do
+    IFS=',' read -r -a LVS <<< "$LOGICAL_VOLUMES"
+
+    for lv in "${LVS[@]}"; do
 
         NAME=$lv
         LV_NAME="lv_k3s_$NAME"
         MOUNT_POINT="$BASE_MOUNT_POINT$NAME"
         FSTAB_ENTRY="/dev/$VG_NAME/$NAME $MOUNT_POINT ext4 defaults 0 0"
 
-        for size in "${LOGICAL_VOLUMES_SIZE[@]}"; do
+        IFS=',' read -r -a LVS <<< "$LOGICAL_VOLUMES_SIZE"
+
+        for size in "${SIZES[@]}"; do
 
             LV_SIZE=$size
 
