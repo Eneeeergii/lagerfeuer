@@ -40,7 +40,7 @@ install_additional_master_node(){
         if [[ "$CURRENT_HOSTNAME" != "$master" ]]; then
 
             echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
-            ssh -i "$SSH_KEY" "$SSH_USER@$master" 'bash -s ' < ./remote_functions/install_k3s_remote.sh
+            ssh -i "$SSH_KEY" "$SSH_USER@$master" 'bash -s ' < ./functions/remote_functions/install_k3s_remote.sh
             echo "✅ K3s installed, KUBECONFIG chenged and $master is added to K3s Cluster!"
 
         fi
