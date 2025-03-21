@@ -36,7 +36,7 @@ install_additional_master_node(){
 
             echo "🚀 Copying Files to $master"
             scp -i "$SSH_KEY" ./remote_functions/remote_create_lv.sh "$SSH_USER@$master:/tmp/remote_create_lv.sh"
-            scp -i "$SSH_KEY" ./remote_functions/remote_k3s_setup.sh "$SSH_USER@$master:/tmp/remote_install_k3s.sh"
+            scp -i "$SSH_KEY" ./remote_functions/remote_install_k3s.sh "$SSH_USER@$master:/tmp/remote_install_k3s.sh"
             scp -i "$SSH_KEY" ./config.env "$SSH_USER@$master:/tmp/config.env"
 
             echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
