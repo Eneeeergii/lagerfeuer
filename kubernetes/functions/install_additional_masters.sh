@@ -25,7 +25,6 @@ install_additional_master_node(){
         exit 1
     fi
 
-    export K3S_TOKEN
 
     if [ "$HA_CLUSTER" == "true" ]; then
     IFS=',' read -r -a MASTER_NODES <<< "$MASTERS"
@@ -54,6 +53,7 @@ install_additional_master_node(){
             echo "✅ All files deleted on $master"
 
         fi
+
     done
     
     elif [ "$HA_CLUSTER" == "false" ]; then
@@ -62,8 +62,6 @@ install_additional_master_node(){
         echo "❌ Current value of HA_CLUSTER is not allowed: $HA_CLUSTER"
         exit 1
     fi
-
-    unset $K3S_TOKEN
 
 }
 
