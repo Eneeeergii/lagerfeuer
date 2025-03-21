@@ -15,11 +15,11 @@ source "$CONFIG_FILE"
 echo "✅ Loaded configuration from $CONFIG_FILE"
 
 # Include all functions
-#for file in ./functions/*.sh; do
-#    if [ -f "$file" ]; then
-#        source "$file"
-#    fi
-#done
+for file in ./functions/*.sh; do
+    if [ -f "$file" ]; then
+        source "$file"
+    fi
+done
 
 #Check Output of Variables
 #echo $KUBE_VIP_API_YAML
