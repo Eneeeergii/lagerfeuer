@@ -2,9 +2,9 @@
 set -e
 
 #For isolated test do this first:
-CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
-source "$CONFIG_FILE"
-echo "✅ Loaded configuration from $CONFIG_FILE"
+#CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
+#source "$CONFIG_FILE"
+#echo "✅ Loaded configuration from $CONFIG_FILE"
 
 check_logical_volume(){
 
@@ -100,4 +100,4 @@ done
 
 }
 
-create_logical_volume
+#create_logical_volume

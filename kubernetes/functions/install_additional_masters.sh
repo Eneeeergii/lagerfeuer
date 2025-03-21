@@ -1,16 +1,18 @@
 #!/bin/bash
 set -e
 
+source ./remote_functions/install_k3s_remote.sh
+
 #For isolated test do this first:
-#CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
-#source "$CONFIG_FILE"
-#echo "✅ Loaded configuration from $CONFIG_FILE"
+CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
+source "$CONFIG_FILE"
+echo "✅ Loaded configuration from $CONFIG_FILE"
 
 install_additional_master_node(){
 
-    ORIGINAL_KUBECONFIG=$1
-    HA_KUBECONFIG=$2
-    API_IP=$3
+    ORIGINAL_KUBECONFIG=$KUBECONFIG
+    HA_KUBECONFIG=$KUBECONFIG_HA
+    API_IP=$K3S_API_IP
     NEW_URL="https://$API_IP:6443"
 
     CURRENT_HOSTNAME=$(hostname)
@@ -40,31 +42,7 @@ install_additional_master_node(){
         if [[ "$CURRENT_HOSTNAME" != "$master" ]]; then
 
             echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
-            ssh -i "$SSH_KEY" "$SSH_USER@$master" << EOF
-curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s - server --server https://$K3S_API_IP:6443 --write-kubeconfig-mode 644
-if [ ! -f "$ORIGINAL_KUBECONFIG" ]; then
-    echo "❌ Error: Original kubeconfig file not found at $ORIGINAL_KUBECONFIG"
-    exit 1
-fi
-
-sudo cp "$ORIGINAL_KUBECONFIG" "$HA_KUBECONFIG"
-sudo sed -i "s|https://127.0.0.1:6443|$NEW_URL|g" "$HA_KUBECONFIG"
-
-if grep -q "$NEW_URL" "$HA_KUBECONFIG"; then
-    echo "✅ Successfully updated server URL in $HA_KUBECONFIG on $master"
-else
-    echo "❌ Error: Failed to update server URL on $master"
-    exit 1
-fi
-
-if grep -q "KUBECONFIG=" /etc/environment; then
-    sudo sed -i "s|KUBECONFIG=.*|KUBECONFIG=$HA_KUBECONFIG|" /etc/environment
-else
-    echo "KUBECONFIG=$HA_KUBECONFIG" | sudo tee -a /etc/environment
-fi
-
-echo "✅ New KUBECONFIG set to $HA_KUBECONFIG on $master"
-EOF
+            ssh -i "$SSH_KEY" "$SSH_USER@$master" 'bash -s ' < ./remote_functions/install_k3s_remote.sh
             echo "✅ K3s installed, KUBECONFIG chenged and $master is added to K3s Cluster!"
 
         fi

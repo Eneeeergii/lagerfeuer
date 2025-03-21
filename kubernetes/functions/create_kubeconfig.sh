@@ -3,9 +3,9 @@ set -e
 
 create_ha_kubeconfig(){
 
-    ORIGINAL_KUBECONFIG=$1
-    HA_KUBECONFIG=$2
-    API_IP=$3
+    ORIGINAL_KUBECONFIG=$KUBECONFIG
+    HA_KUBECONFIG=$KUBECONFIG_HA
+    API_IP=$K3S_API_IP
     NEW_URL="https://$API_IP:6443"
 
     # Check if Kubeconfig exists

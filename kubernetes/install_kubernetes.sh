@@ -37,21 +37,25 @@ echo "✅ Loaded configuration from $CONFIG_FILE"
 #echo $POSTGRESQL_OPERATOR_INSTALL
 #echo $POSTGRESQL_NAMESPACE
 
-# --- Install K3s on First Node ---
+### --- Install K3s on First Node ---
 
 install_firstnode_local
 
+# --- Create logical Volumes ---
+
+create_logical_volume
+
 # --- Deploy kube-vip for Kubernetes API VIP ---
 
-# Check if Deployment exists
+#Check if Deployment exists
 check_file $KUBE_VIP_API_YAML
 
-# Install KubeVIP for API
+#Install KubeVIP for API
 install_kubeVIP_HA_API
 
 # --- Deploy KubeVIP & KubeVIP Cloud Provider for Load Balancing ---
 
-# Check if Deployments exist
+#Check if Deployments exist
 check_file $KUBE_VIP_LB_YAML
 check_file $KUBE_VIP_CLOUD_PROVIDER_YAML
 check_file $KUBE_VIP_CLOUD_PROVIDER_CONFIGMAP_YAML
@@ -61,11 +65,11 @@ install_kubeVIP_SVC_LB
 
 # --- Create KUBECONFIG with API IP ---
 
-create_ha_kubeconfig $KUBECONFIG $KUBECONFIG_HA $K3S_API_IP
+create_ha_kubeconfig
 
-# --- Add further Master Nodes ---
+### --- Add further Master Nodes ---
 
-install_additional_master_node $KUBECONFIG $KUBECONFIG_HA $K3S_API_IP
+install_additional_master_node
 
 # --- Adding WORKER Nodes ---
 
@@ -87,13 +91,7 @@ else
 fi
 
 # --- Installation of PostgreSQL Operator --- 
-install_postgresql_operator $POSTGRESQL_OPERATOR_INSTALL $POSTGRESQL_NAMESPACE $KUBECONFIG
-
-# --- Deploy Wordpress ---
-#check_volume_group $VOLUME_GROUP_NAME
-#create_logical_volume $POSTGRESQL_LV_AND_PV_NAME $VOLUME_GROUP_NAME $POSTGRESQL_LV_AND_PV_SIZE $LOGICAL_VOLUME_MOUNT_POINT
-
-
+#install_postgresql_operator $POSTGRESQL_OPERATOR_INSTALL $POSTGRESQL_NAMESPACE $KUBECONFIG
 
 # --- Unset all Variables --- 
 unset $POSTGRESQL_OPERATOR_INSTALL
