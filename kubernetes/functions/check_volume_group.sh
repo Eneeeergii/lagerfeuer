@@ -3,7 +3,7 @@ set -e
 
 check_volume_group(){
 
-    VG_NAME=$1
+    VG_NAME=$VOLUME_GROUP_NAME
 
     if sudo vgdisplay "$VG_NAME" &> /dev/null; then
         echo "✅ Volume Group '$VG_NAME' exists."

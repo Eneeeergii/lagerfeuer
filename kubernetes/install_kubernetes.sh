@@ -43,6 +43,7 @@ install_firstnode_local
 
 # --- Create logical Volumes ---
 
+check_volume_group
 create_logical_volume
 
 # --- Deploy kube-vip for Kubernetes API VIP ---
