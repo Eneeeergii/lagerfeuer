@@ -57,7 +57,7 @@ create_logical_volume(){
                 echo "⚠️ Mount point '$MOUNT_POINT' does not exist. Creating it now..."
                 sudo mkdir -p "$MOUNT_POINT"
             else
-                echo "❌ Error: Mount point '$MOUNT_POINT' already exists! Exiting..."
+                echo "✅ Mount point '$MOUNT_POINT' already exists!"
             fi
 
             # Mount the LV
