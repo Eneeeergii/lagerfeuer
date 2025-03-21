@@ -19,6 +19,8 @@ create_logical_volume(){
 
     IFS=',' read -r -a LVS <<< "$LOGICAL_VOLUMES"
 
+    echo $LVS
+
     for lv in "${LVS[@]}"; do
 
         NAME=$lv
