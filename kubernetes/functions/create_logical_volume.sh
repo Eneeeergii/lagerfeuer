@@ -22,11 +22,12 @@ create_logical_volume(){
 
     for lv in "${LVS[@]}"; do
 
+        i=1
+
         NAME=$lv
         LV_NAME="lv_k3s_$NAME"
         MOUNT_POINT="$BASE_MOUNT_POINT$NAME"
         FSTAB_ENTRY="/dev/$VG_NAME/$NAME $MOUNT_POINT ext4 defaults 0 0"
-        i=1
         size="${SIZES[$i]}"
         LV_SIZE=$size
 
