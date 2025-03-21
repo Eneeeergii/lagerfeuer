@@ -93,7 +93,7 @@ for lv in "${LVS[@]}"; do
     fi
 
     # Add entry to fstab if not already present
-    if ! grep -qs "/dev/$VG_NAME/$LV_NAME" /etc/fstab; then
+    if ! grep -qs "$FSTAB_ENTRY" /etc/fstab; then
         echo "🔄 Adding mount entry to /etc/fstab..."
         echo "$FSTAB_ENTRY" | tee -a /etc/fstab
         echo "✅ fstab entry added."
