@@ -19,10 +19,9 @@ create_logical_volume(){
 
     IFS=',' read -r -a LVS <<< "$LOGICAL_VOLUMES"
     IFS=',' read -r -a SIZES <<< "$LOGICAL_VOLUMES_SIZE"
+    i=0
 
     for lv in "${LVS[@]}"; do
-
-        i=0
 
         NAME=$lv
         LV_NAME="lv_k3s_$NAME"
@@ -98,7 +97,7 @@ create_logical_volume(){
 
         echo "🎉 Setup complete! Logical Volume '$LV_NAME' is mounted at '$MOUNT_POINT'."
 
-        ((i++))
+        ((++i))
 done
 
 }
