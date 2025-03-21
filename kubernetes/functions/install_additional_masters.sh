@@ -40,11 +40,11 @@ install_additional_master_node(){
             scp -i "$SSH_KEY" ./config.env "$SSH_USER@$master:/tmp/config.env"
 
             echo "🚀 Installing K3s version $K3S_VERSION on $master and adding it to the K3s Cluster"
-            scp -i "$SSH_KEY" remote_k3s_setup.sh "$SSH_USER@$master:/tmp/remote_install_k3s.sh"
+            ssh -i "$SSH_KEY" "$SSH_USER@$master" "bash /tmp/remote_install_k3s.sh"
             echo "✅ K3s installed, KUBECONFIG chenged and $master is added to K3s Cluster!"
 
             echo "🚀 Creating Logical Volumes on $master"
-            scp -i "$SSH_KEY" remote_k3s_setup.sh "$SSH_USER@$master:/tmp/remote_create_lv.sh"
+            ssh -i "$SSH_KEY" "$SSH_USER@$master" "bash /tmp/remote_create_lv.sh"
             echo "✅ Logical Volumes on $master are created!"
             
             echo "🚀 Deleting files on $master"
