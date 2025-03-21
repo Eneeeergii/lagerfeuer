@@ -13,13 +13,6 @@ install_additional_master_node(){
     API_IP=$K3S_API_IP
     NEW_URL="https://$API_IP:6443"
 
-    VG_NAME=$VOLUME_GROUP_NAME
-    BASE_MOUNT_POINT=$LOGICAL_VOLUME_MOUNT_POINT
-
-    IFS=',' read -r -a LVS <<< "$LOGICAL_VOLUMES"
-    IFS=',' read -r -a SIZES <<< "$LOGICAL_VOLUMES_SIZE"
-    i=0
-
     CURRENT_HOSTNAME=$(hostname)
 
     if [ -z "$MASTERS" ]; then
@@ -71,6 +64,13 @@ else
 fi
 
 echo "✅ New KUBECONFIG set to $HA_KUBECONFIG on $master"
+
+VG_NAME=$VOLUME_GROUP_NAME
+BASE_MOUNT_POINT=$LOGICAL_VOLUME_MOUNT_POINT
+
+IFS=',' read -r -a LVS <<< "$LOGICAL_VOLUMES"
+IFS=',' read -r -a SIZES <<< "$LOGICAL_VOLUMES_SIZE"
+i=0
 
 for lv in "${LVS[@]}"; do
 
