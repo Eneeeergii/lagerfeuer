@@ -86,7 +86,7 @@ for lv in "${LVS[@]}"; do
         echo "✅ Logical Volume '$LV_NAME' already exists in Volume Group '$VG_NAME'."
     else
         echo "⚠️ Logical Volume '$LV_NAME' does not exist. Creating it now..."
-        lvcreate -y -L "$LV_SIZE" -n "$LV_NAME" "$VG_NAME"
+        sudo lvcreate -y -L "$LV_SIZE" -n "$LV_NAME" "$VG_NAME"
 
         if check_logical_volume; then
             echo "✅ Logical Volume '$LV_NAME' created successfully."
@@ -99,7 +99,7 @@ for lv in "${LVS[@]}"; do
     # Check if LV is formatted
     if ! sudo blkid "/dev/$VG_NAME/$LV_NAME" &> /dev/null; then
         echo "⚠️ Logical Volume '$LV_NAME' is not formatted. Formatting now..."
-        mkfs.ext4 "/dev/$VG_NAME/$LV_NAME"
+        sudo mkfs.ext4 "/dev/$VG_NAME/$LV_NAME"
         echo "✅ Formatting complete."
     else
         echo "✅ Logical Volume '$LV_NAME' is already formatted."
