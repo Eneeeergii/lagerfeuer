@@ -88,7 +88,7 @@ for lv in "${LVS[@]}"; do
         echo "⚠️ Logical Volume '$LV_NAME' does not exist. Creating it now..."
         sudo lvcreate -y -L "$LV_SIZE" -n "$LV_NAME" "$VG_NAME"
 
-        if check_logical_volume; then
+        if sudo lvdisplay "/dev/$VG_NAME/$LV_NAME" &> /dev/null; then
             echo "✅ Logical Volume '$LV_NAME' created successfully."
         else
             echo "❌ Error: Failed to create Logical Volume '$LV_NAME'. Exiting..."
