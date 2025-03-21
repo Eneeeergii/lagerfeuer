@@ -8,11 +8,6 @@ set -e
 
 install_additional_master_node(){
 
-    ORIGINAL_KUBECONFIG=$KUBECONFIG
-    HA_KUBECONFIG=$KUBECONFIG_HA
-    API_IP=$K3S_API_IP
-    NEW_URL="https://$API_IP:6443"
-
     CURRENT_HOSTNAME=$(hostname)
 
     if [ -z "$MASTERS" ]; then

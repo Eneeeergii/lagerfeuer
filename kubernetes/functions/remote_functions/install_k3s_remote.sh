@@ -1,3 +1,8 @@
+ORIGINAL_KUBECONFIG=$KUBECONFIG
+HA_KUBECONFIG=$KUBECONFIG_HA
+API_IP=$K3S_API_IP
+NEW_URL="https://$API_IP:6443"
+
 curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s - server --server https://$K3S_API_IP:6443 --write-kubeconfig-mode 644
 if [ ! -f "$ORIGINAL_KUBECONFIG" ]; then
     echo "❌ Error: Original kubeconfig file not found at $ORIGINAL_KUBECONFIG"
