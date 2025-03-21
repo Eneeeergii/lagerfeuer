@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-source ./remote_functions/install_k3s_remote.sh
+source ./functions/remote_functions/install_k3s_remote.sh
 
 #For isolated test do this first:
 CONFIG_FILE=/home/k3s-install/lagerfeuer/kubernetes/config.env
