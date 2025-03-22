@@ -27,11 +27,6 @@ if [ "$HA_CLUSTER" == "true" ]; then
     ### --- Install K3s on First Node ---
     install_firstnode_local
 
-    # --- Create logical Volumes ---
-
-    check_volume_group
-    create_logical_volume
-
     # --- Deploy kube-vip for Kubernetes API VIP ---
 
     #Check if Deployment exists
@@ -74,11 +69,6 @@ elif [ "$HA_CLUSTER" == "false" ]; then
     ### --- Install K3s on First Node ---
     install_firstnode_local
     create_ha_kubeconfig_singlenode
-
-    # --- Create logical Volumes ---
-
-    check_volume_group
-    create_logical_volume
 
 else
     echo "❌ Value of HA_CLUSTER is not valid!"
